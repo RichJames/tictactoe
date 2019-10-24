@@ -6,6 +6,7 @@
   ],
   "settings": {
     "files.associations": {
+      "*.cpp": "cpp",
       "array": "cpp",
       "atomic": "cpp",
       "*.tcc": "cpp",
@@ -49,7 +50,14 @@
       "memory_resource": "cpp",
       "random": "cpp",
       "string": "cpp",
-      "bit": "cpp"
+      "bit": "cpp",
+      "chrono": "cpp",
+      "unordered_set": "cpp",
+      "thread": "cpp",
+      "map": "cpp",
+      "set": "cpp",
+      "ctime": "cpp",
+      "ratio": "cpp"
     }
   }
 }
