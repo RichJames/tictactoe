@@ -7,6 +7,9 @@
 
 #include "input.h"
 #include "player.h"
+#include "board.h"
+
+using pPlayer = std::shared_ptr<Player>;
 
 void GetPlayerMove()
 {
@@ -49,17 +52,62 @@ int ChoosePlayer(const std::string &prompt)
   return player;
 }
 
-void PlayerMove(const std::shared_ptr<Player> player)
+void PlayerMove(const pPlayer player)
 {
   std::cout << "Move: " << player->Move() << '\n';
 }
 
-std::shared_ptr<Player> assignPlayer(int i)
+pPlayer assignPlayer(int i)
 {
   if (i == 1)
     return std::make_shared<HumanPlayer>();
   else
     return std::make_shared<ComputerPlayer>();
+}
+
+void test_board(Board &b)
+{
+  auto test = [&b](int i, int j, int k) {
+    b.reset();
+    // b.display();
+    b.mark_move(i, 'X');
+    b.mark_move(j, 'X');
+    b.mark_move(k, 'X');
+    b.display();
+    if (b.check_for_winner())
+      std::cout << "We have a winner!\n";
+    else
+      std::cout << "No winner.\n";
+  };
+  std::cout << "--------- Test 1 ----------\n\n";
+  test(1, 2, 3);
+  std::cout << "--------- Test 2 ----------\n\n";
+  test(4, 5, 6);
+  std::cout << "--------- Test 3 ----------\n\n";
+  test(7, 8, 9);
+  std::cout << "--------- Test 4 ----------\n\n";
+  test(1, 4, 7);
+  std::cout << "--------- Test 5 ----------\n\n";
+  test(2, 5, 8);
+  std::cout << "--------- Test 6 ----------\n\n";
+  test(3, 6, 9);
+  std::cout << "--------- Test 7 ----------\n\n";
+  test(1, 2, 1);
+}
+
+void play_game(pPlayer player1, pPlayer player2)
+{
+  std::cout << "Playing the game...\n";
+  Board board;
+  // board.display();
+  // board.mark_move(7, 'X');
+  // board.mark_move(8, 'X');
+  // board.mark_move(9, 'X');
+  // board.display();
+  // if (board.check_for_winner())
+  //   std::cout << "We have a winner!"
+  //             << std::endl;
+  test_board(board);
 }
 
 int main(int argc, char const *argv[])
@@ -75,13 +123,13 @@ int main(int argc, char const *argv[])
   int first = ChoosePlayer("Who will be player 1 (1=human, 2=computer)? ");
   int second = ChoosePlayer("Who will be player 2 (1=human, 2=computer)? ");
 
-  std::shared_ptr<Player> player1 = assignPlayer(first);
-  std::shared_ptr<Player> player2 = assignPlayer(second);
+  pPlayer player1 = assignPlayer(first);
+  pPlayer player2 = assignPlayer(second);
 
-  // GetPlayerMove();
+  // PlayerMove(player1);
+  // PlayerMove(player2);
 
-  PlayerMove(player1);
-  PlayerMove(player2);
+  play_game(player1, player2);
 
   return 0;
 }
