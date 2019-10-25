@@ -2,6 +2,9 @@
 #define ___BOARD_H
 
 #include <iostream>
+#include <tuple>
+#include <algorithm>
+#include <iterator>
 
 class Board
 {
@@ -41,28 +44,37 @@ public:
     return false; // illegal move
   }
 
-  bool check_for_winner()
+  // bool check_for_winner()
+  std::tuple<bool, bool> check_for_winner()
   {
+    // returns a tuple of two bools.  1st bool is if game ends.  2nd bool is if winner found.
+
     // determince if there is a winner
     // check rows
     for (int i = 0; i < 3; ++i)
     {
       if ((_board[i][0] == _board[i][1]) && (_board[i][0] == _board[i][2]) && (_board[i][0] != ' '))
-        return true;
+        return {true, true};
     }
     // check columns
     for (int i = 0; i < 3; ++i)
     {
       if ((_board[0][i] == _board[1][i]) && (_board[0][i] == _board[2][i]) && (_board[0][i] != ' '))
-        return true;
+        return {true, true};
     }
     // check diagonals
     if ((_board[0][0] == _board[1][1]) && (_board[0][0] == _board[2][2]) && (_board[0][0] != ' '))
-      return true;
+      return {true, true};
     if ((_board[0][2] == _board[1][1]) && (_board[0][2] == _board[2][0]) && (_board[0][2] != ' '))
-      return true;
+      return {true, true};
 
-    return false;
+    // check for draw
+    for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
+        if (_board[i][j] == ' ') // did we find an unplayed space?
+          return {false, false}; // game doesn't end, no winner found
+
+    return {true, false}; // game ends, no winner found
   }
   void reset()
   {
@@ -72,9 +84,11 @@ public:
   }
 
 private:
-  char _board[3][3] = {{' ', ' ', ' '},
-                       {' ', ' ', ' '},
-                       {' ', ' ', ' '}};
+  // implement this as a std::vector? or std::array?
+  std::array<std::array<char, 3>, 3> _board{{{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}}};
+  //   char _board[3][3] = {{' ', ' ', ' '},
+  //                        {' ', ' ', ' '},
+  //                        {' ', ' ', ' '}};
 };
 
 #endif // ___BOARD_H

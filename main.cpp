@@ -74,10 +74,12 @@ void test_board(Board &board)
     board.mark_move(j, b);
     board.mark_move(k, c);
     board.display();
-    if (board.check_for_winner())
+    if (auto [bgame_end, bwinner_found] = board.check_for_winner(); bwinner_found)
       std::cout << "We have a winner!\n";
+    else if (bgame_end)
+      std::cout << "Game ends in draw.\n";
     else
-      std::cout << "No winner.\n";
+      std::cout << "No winner. Game continues.\n";
   };
   // positive tests
   std::cout << "--------- Test 1 ----------\n\n";
@@ -108,7 +110,19 @@ void play_game(pPlayer player1, pPlayer player2)
 {
   std::cout << "Playing the game...\n";
   Board board;
-  // board.display();
+  board.display();
+
+  pPlayer currentPlayer = player1;
+
+  // while (!board.check_for_winner()) // <---------- need to check for draw too!
+  // {
+  // Get currentPlayer move
+  // Put move on board
+  // Set currentPlayer = currentPlayer == player1 ? player2 : player1;
+  // }
+
+  // We have a winner or a draw
+
   // board.mark_move(7, 'X');
   // board.mark_move(8, 'X');
   // board.mark_move(9, 'X');
@@ -116,6 +130,7 @@ void play_game(pPlayer player1, pPlayer player2)
   // if (board.check_for_winner())
   //   std::cout << "We have a winner!"
   //             << std::endl;
+
   test_board(board);
 }
 
