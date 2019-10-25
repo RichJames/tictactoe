@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <fstream>
 #include <vector>
 #include <limits>
 #include <memory>
@@ -65,45 +66,61 @@ pPlayer assignPlayer(int i)
     return std::make_shared<ComputerPlayer>();
 }
 
-void test_board(Board &board)
+std::vector<std::string> get_test_cases(std::string testfilename)
 {
-  auto test = [&board](int i, int j, int k, char a, char b, char c) {
-    board.reset();
-    // board.display();
-    board.mark_move(i, a);
-    board.mark_move(j, b);
-    board.mark_move(k, c);
-    board.display();
-    if (auto [bgame_end, bwinner_found] = board.check_for_winner(); bwinner_found)
-      std::cout << "We have a winner!\n";
-    else if (bgame_end)
-      std::cout << "Game ends in draw.\n";
-    else
-      std::cout << "No winner. Game continues.\n";
-  };
-  // positive tests
-  std::cout << "--------- Test 1 ----------\n\n";
-  test(1, 2, 3, 'X', 'X', 'X');
-  std::cout << "--------- Test 2 ----------\n\n";
-  test(4, 5, 6, 'X', 'X', 'X');
-  std::cout << "--------- Test 3 ----------\n\n";
-  test(7, 8, 9, 'X', 'X', 'X');
-  std::cout << "--------- Test 4 ----------\n\n";
-  test(1, 4, 7, 'X', 'X', 'X');
-  std::cout << "--------- Test 5 ----------\n\n";
-  test(2, 5, 8, 'X', 'X', 'X');
-  std::cout << "--------- Test 6 ----------\n\n";
-  test(3, 6, 9, 'X', 'X', 'X');
-  std::cout << "--------- Test 7 ----------\n\n";
-  test(1, 5, 9, 'X', 'X', 'X');
-  std::cout << "--------- Test 8 ----------\n\n";
-  test(3, 5, 7, 'X', 'X', 'X');
+  std::vector<std::string> testcases;
+  std::ifstream file;
+  std::string input;
 
-  // negative tests
-  std::cout << "--------- Test 9 ----------\n\n";
-  test(1, 2, 3, 'X', 'X', 'O');
-  std::cout << "--------- Test 10 ----------\n\n";
-  test(1, 2, 3, 'X', 'X', ' ');
+  file.open(testfilename);
+
+  while (std::getline(file, input))
+  {
+    if (input[0] != '#')
+      testcases.push_back(input);
+  }
+  return testcases;
+}
+
+bool test_board(Board &board)
+{
+  auto test = [&board](std::string testcase) -> bool {
+    board.reset();
+    int i = 1;
+    char expected_result = testcase.back(); // get last character, which is the expected result code(w=winner, d=draw, c=continue)
+    testcase.pop_back();                    // delete last character
+    for (char move : testcase)
+    {
+      move = move == 'b' ? ' ' : move; // 'b' represents a blank cell in the test file
+      board.mark_move(i++, move);
+    }
+    std::cout << "Testcase: " << testcase << ' ';
+    auto [game_end, winner_found] = board.check_for_winner();
+    bool test_passed = false;
+
+    if (expected_result == 'w' && winner_found && game_end)
+      test_passed = true;
+    else if (expected_result == 'd' && !winner_found && game_end)
+      test_passed = true;
+    else if (expected_result == 'c' && !winner_found && !game_end)
+      test_passed = true;
+
+    if (test_passed)
+      std::cout << "Passed\n";
+    else
+      std::cout << "Failed <-------!\n";
+
+    return test_passed;
+  };
+
+  auto testcases = get_test_cases("tests.txt");
+
+  bool test_success = true;
+  for (auto testcase : testcases)
+    if (!test(testcase))
+      test_success = false;
+
+  return test_success;
 }
 
 void play_game(pPlayer player1, pPlayer player2)
@@ -131,7 +148,12 @@ void play_game(pPlayer player1, pPlayer player2)
   //   std::cout << "We have a winner!"
   //             << std::endl;
 
-  test_board(board);
+  if (test_board(board))
+    std::cout << "**** All tests passed!!! ****\n";
+  else
+    std::cout << "!!!!!!! At least one test failed !!!!!!!\n";
+
+  std::cout << std::flush;
 }
 
 int main(int argc, char const *argv[])

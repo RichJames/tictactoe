@@ -1,0 +1,46 @@
+# ----positive row tests----
+XXXbbbbbbw
+bbbXXXbbbw
+bbbbbbXXXw
+OOObbbbbbw
+bbbOOObbbw
+bbbbbbOOOw
+# ----positive col tests----
+XbbXbbXbbw
+bXbbXbbXbw
+bbXbbXbbXw
+ObbObbObbw
+bObbObbObw
+bbObbObbOw
+# ----positive diag tests----
+XbbbXbbbXw
+bbXbXbXbbw
+ObbbObbbOw
+bbObObObbw
+# ----positive draw tests----
+XOXOXOOXOd
+XOXXOXOXOd
+OXXXXOOOXd
+# ----negative row tests----
+XXbbbbbbbc
+bbbbXXbbbc
+bbbbbbbXXc
+ObObbbbbbc
+bbbOObbbbc
+bbbbbbOObc
+# ----negative col tests----
+bbbXbbXbbc
+bXbbbbbXbc
+bbXbbXbbbc
+ObbbbbObbc
+bObbObbbbc
+bbbbbObbOc
+# ----negative diag tests----
+XbbbXbbbbc
+bbXbbbXbbc
+bbbbObbbOc
+bbObbbObbc
+# ---- negative draw tests ----
+XOXOXOOXbc
+XOXbOXOXOc
+OXOXbXOXOc
