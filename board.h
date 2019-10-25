@@ -57,6 +57,10 @@ public:
         return true;
     }
     // check diagonals
+    if ((_board[0][0] == _board[1][1]) && (_board[0][0] == _board[2][2]) && (_board[0][0] != ' '))
+      return true;
+    if ((_board[0][2] == _board[1][1]) && (_board[0][2] == _board[2][0]) && (_board[0][2] != ' '))
+      return true;
 
     return false;
   }

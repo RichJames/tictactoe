@@ -65,34 +65,43 @@ pPlayer assignPlayer(int i)
     return std::make_shared<ComputerPlayer>();
 }
 
-void test_board(Board &b)
+void test_board(Board &board)
 {
-  auto test = [&b](int i, int j, int k) {
-    b.reset();
-    // b.display();
-    b.mark_move(i, 'X');
-    b.mark_move(j, 'X');
-    b.mark_move(k, 'X');
-    b.display();
-    if (b.check_for_winner())
+  auto test = [&board](int i, int j, int k, char a, char b, char c) {
+    board.reset();
+    // board.display();
+    board.mark_move(i, a);
+    board.mark_move(j, b);
+    board.mark_move(k, c);
+    board.display();
+    if (board.check_for_winner())
       std::cout << "We have a winner!\n";
     else
       std::cout << "No winner.\n";
   };
+  // positive tests
   std::cout << "--------- Test 1 ----------\n\n";
-  test(1, 2, 3);
+  test(1, 2, 3, 'X', 'X', 'X');
   std::cout << "--------- Test 2 ----------\n\n";
-  test(4, 5, 6);
+  test(4, 5, 6, 'X', 'X', 'X');
   std::cout << "--------- Test 3 ----------\n\n";
-  test(7, 8, 9);
+  test(7, 8, 9, 'X', 'X', 'X');
   std::cout << "--------- Test 4 ----------\n\n";
-  test(1, 4, 7);
+  test(1, 4, 7, 'X', 'X', 'X');
   std::cout << "--------- Test 5 ----------\n\n";
-  test(2, 5, 8);
+  test(2, 5, 8, 'X', 'X', 'X');
   std::cout << "--------- Test 6 ----------\n\n";
-  test(3, 6, 9);
+  test(3, 6, 9, 'X', 'X', 'X');
   std::cout << "--------- Test 7 ----------\n\n";
-  test(1, 2, 1);
+  test(1, 5, 9, 'X', 'X', 'X');
+  std::cout << "--------- Test 8 ----------\n\n";
+  test(3, 5, 7, 'X', 'X', 'X');
+
+  // negative tests
+  std::cout << "--------- Test 9 ----------\n\n";
+  test(1, 2, 3, 'X', 'X', 'O');
+  std::cout << "--------- Test 10 ----------\n\n";
+  test(1, 2, 3, 'X', 'X', ' ');
 }
 
 void play_game(pPlayer player1, pPlayer player2)
@@ -112,11 +121,6 @@ void play_game(pPlayer player1, pPlayer player2)
 
 int main(int argc, char const *argv[])
 {
-  /* code */
-  char board[3][3] = {{' ', ' ', ' '},
-                      {' ', ' ', ' '},
-                      {' ', ' ', ' '}};
-
   std::cout << "Welcome to Tic Tac Toe!" << std::endl
             << std::endl;
 
