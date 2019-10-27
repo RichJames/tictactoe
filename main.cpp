@@ -31,7 +31,7 @@ std::string GetPlayerName(const std::string &prompt)
   while (true)
   {
     playername = getinput<std::string>(prompt);
-    if (playername.empty())
+    if (!playername.empty())
     {
       break;
     }
