@@ -1,12 +1,13 @@
-#ifndef ___TESTS_H
-#define ___TESTS_H
+#ifndef __RICH_PROGRAMMING_CPP_TICTACTOE_TESTS_H
+#define __RICH_PROGRAMMING_CPP_TICTACTOE_TESTS_H
 
-#include <vector>
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "board.h"
 
 std::vector<std::string> get_test_cases(std::string testfilename);
-bool test_board(Board &board);
+bool test_board(const std::shared_ptr<Board> &pBoard);
 
-#endif // ___TESTS_H
+#endif // __RICH_PROGRAMMING_CPP_TICTACTOE_TESTS_H

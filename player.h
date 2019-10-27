@@ -1,17 +1,18 @@
-#ifndef __PLAYER_H
-#define __PLAYER_H
+#ifndef __RICH_PROGRAMMING_CPP_TICTACTOE_PLAYER_H
+#define __RICH_PROGRAMMING_CPP_TICTACTOE_PLAYER_H
+
+#include "board.h"
+#include "input.h"
 
 #include <string>
-#include "input.h"
-#include "board.h"
 
 class Player
 {
 public:
   Player() = delete;
 
-  Player(std::string name, bool first_player, Board &board)
-      : _name(name), _first(first_player), _board(board)
+  Player(std::string name, bool first_player, std::shared_ptr<Board> pBoard)
+      : _name(std::move(name)), _first(first_player), _board(std::move(pBoard))
   {
   }
 
@@ -25,32 +26,37 @@ public:
     std::cout << std::flush;
   }
 
-protected:
+  const std::string &getName() { return _name; }
+  bool isFirst() { return _first; }
+  std::shared_ptr<Board> getBoard() { return _board; }
+
+private:
   std::string _name;
   bool _first;
-  Board &_board;
+  std::shared_ptr<Board> _board;
 };
 
 class HumanPlayer : public Player
 {
 public:
   HumanPlayer() = delete;
-  HumanPlayer(std::string name, bool first_player, Board &board)
-      : Player(name, first_player, board), _prompt(_name + " - Enter a move: ")
+  HumanPlayer(std::string name, bool first_player, std::shared_ptr<Board> pBoard)
+      : Player(std::move(name), first_player, std::move(pBoard)), _prompt(getName() + " - Enter a move: ")
   {
   }
 
-  void Move()
+  void Move() override
   {
     int move = -1;
-    char mark = _first ? 'X' : 'O';
+    char mark = isFirst() ? 'X' : 'O';
+    std::shared_ptr<Board> pBoard = getBoard();
     do
     {
       move = getinput<int>(_prompt);
-    } while (!_board.mark_move(move, mark));
+    } while (!pBoard->mark_move(move, mark));
   }
 
-  void Info()
+  void Info() override
   {
     Player::Info();
     std::cout << "My prompt is: " << _prompt << std::endl;
@@ -64,14 +70,14 @@ class ComputerPlayer : public Player
 {
 public:
   ComputerPlayer() = delete;
-  ComputerPlayer(std::string name, bool first_player, Board &board)
-      : Player(name, first_player, board)
+  ComputerPlayer(std::string name, bool first_player, std::shared_ptr<Board> pBoard)
+      : Player(std::move(name), first_player, std::move(pBoard))
   {
   }
-  void Move()
+  void Move() override
   {
     // return 2;
   }
 };
 
-#endif // __PLAYER_H
+#endif // __RICH_PROGRAMMING_CPP_TICTACTOE_PLAYER_H

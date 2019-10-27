@@ -1,40 +1,57 @@
-#ifndef ___BOARD_H
-#define ___BOARD_H
+#ifndef __RICH_PROGRAMMING_CPP_TICTACTOE_BOARD_H
+#define __RICH_PROGRAMMING_CPP_TICTACTOE_BOARD_H
 
-#include <iostream>
-#include <tuple>
 #include <algorithm>
+#include <iostream>
 #include <iterator>
+#include <tuple>
+
+// #define TCB_SPAN_NAMESPACE_NAME tcb
+// #include "span.hpp"
+#include "gsl-lite.hpp"
+
+// #define NUMBER_OF_SQUARES 9
+constexpr unsigned int number_of_squares = 9;
 
 class Board
 {
 public:
+  Board()
+  {
+    reset();
+  }
   void display()
   {
-    // display the board
+    gsl::span<char> safeboard{_board};
     std::cout << '\n'
-              << ' ' << _board[0] << " | " << _board[1] << " | " << _board[2] << '\n'
+              << ' ' << safeboard[top_lft] << " | " << safeboard[top_mid] << " | " << safeboard[top_rgt] << '\n'
               << "-----------" << '\n'
-              << ' ' << _board[3] << " | " << _board[4] << " | " << _board[5] << '\n'
+              << ' ' << safeboard[mid_lft] << " | " << safeboard[ctr] << " | " << safeboard[mid_rgt] << '\n'
               << "-----------" << '\n'
-              << ' ' << _board[6] << " | " << _board[7] << " | " << _board[8] << '\n'
-              << '\n';
+              << ' ' << safeboard[bot_lft] << " | " << safeboard[bot_mid] << " | " << safeboard[bot_rgt] << '\n'
+              << std::endl;
   }
 
-  bool mark_move(int position, char move)
+  bool mark_move(const unsigned int position, char move)
   {
     // update the board with the move
     // 1 = [0], 2 = [1], 3 = [2]
     // 4 = [3], 5 = [4], 6 = [5]
     // 7 = [6], 8 = [7], 9 = [8]
 
-    position -= 1; // User position is 1-based, array position is 0-based.
-
-    // is move legal?
-    if ((position >= 0 && position <= 8) && _board[position] == ' ')
+    if (position > 0 && position <= number_of_squares)
     {
-      _board[position] = move;
-      return true;
+      const unsigned int pos = position - 1; // User position is 1-based, array position is 0-based.
+
+      gsl::span<char> safeboard{_board}; // enable compiler checking of array bounds
+
+      // is move legal?
+      // if (_board[pos] == ' ')
+      if (gsl::at(_board, pos) == ' ')
+      {
+        safeboard[pos] = move;
+        return true;
+      }
     }
 
     return false; // illegal move
@@ -47,40 +64,66 @@ public:
 
     // determince if there is a winner
     // check rows
-    for (int i = 0; i < 9; i += 3)
+    const int squares_per_row = 3;
+    for (int i = 0; i < number_of_squares; i += squares_per_row)
     {
-      if ((_board[i] == _board[i + 1]) && (_board[i] == _board[i + 2]) && (_board[i] != ' '))
+      // if ((_board[i] == _board[i + 1]) && (_board[i] == _board[i + 2]) && (_board[i] != ' '))
+      if ((gsl::at(_board, i) == gsl::at(_board, i + 1)) && (gsl::at(_board, i) == gsl::at(_board, i + 2)) && (gsl::at(_board, i) != ' '))
+      {
         return {true, true};
+      }
     }
     // check columns
-    for (int i = 0; i < 3; ++i)
+    const int number_of_columns = 3;
+    for (int i = 0; i < number_of_columns; ++i)
     {
-      if ((_board[i] == _board[i + 3]) && (_board[i] == _board[i + 6]) && (_board[i] != ' '))
+      // if ((_board[i] == _board[i + squares_per_row]) && (_board[i] == _board[i + 2 * squares_per_row]) && (_board[i] != ' '))
+      if ((gsl::at(_board, i) == gsl::at(_board, i + squares_per_row)) && (gsl::at(_board, i) == gsl::at(_board, i + 2 * squares_per_row)) && (gsl::at(_board, i) != ' '))
+      {
         return {true, true};
+      }
     }
     // check diagonals
-    if ((_board[0] == _board[4]) && (_board[0] == _board[8]) && (_board[0] != ' '))
+    if ((gsl::at(_board, top_lft) == gsl::at(_board, ctr)) && (gsl::at(_board, top_lft) == gsl::at(_board, bot_rgt)) && (gsl::at(_board, top_lft) != ' '))
+    {
       return {true, true};
-    if ((_board[2] == _board[4]) && (_board[2] == _board[6]) && (_board[2] != ' '))
+    }
+    if ((gsl::at(_board, top_rgt) == gsl::at(_board, ctr)) && (gsl::at(_board, top_rgt) == gsl::at(_board, bot_lft)) && (gsl::at(_board, top_rgt) != ' '))
+    {
       return {true, true};
+    }
 
     // check for draw
-    for (int i = 0; i < 9; ++i)
-      if (_board[i] == ' ')    // did we find an unplayed space?
+    for (int i = 0; i < number_of_squares; ++i)
+    {
+      if (gsl::at(_board, i) == ' ') // did we find an unplayed space?
+      {
         return {false, false}; // game doesn't end, no winner found
-
+      }
+    }
     return {true, false}; // game ends, no winner found
   }
   void reset()
   {
-    for (int i = 0; i < 9; ++i)
-      _board[i] = ' ';
+    gsl::span<char> safeboard{_board};
+
+    for (auto &cell : safeboard)
+    {
+      cell = ' ';
+    }
   }
 
 private:
-  // implement this as a std::vector? or std::array?
-  // std::array<std::array<char, 3>, 3> _board{{{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}}};
-  std::array<char, 9> _board{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
+  std::array<char, number_of_squares> _board;
+  const unsigned int top_lft = 0; // top left
+  const unsigned int top_mid = 1; // top middle
+  const unsigned int top_rgt = 2; // top right
+  const unsigned int mid_lft = 3; // middle left
+  const unsigned int ctr = 4;     // center
+  const unsigned int mid_rgt = 5; // middle right
+  const unsigned int bot_lft = 6; // bottom left
+  const unsigned int bot_mid = 7; // bottom middle
+  const unsigned int bot_rgt = 8; // bottom right
 };
 
-#endif // ___BOARD_H
+#endif // __RICH_PROGRAMMING_CPP_TICTACTOE_BOARD_H

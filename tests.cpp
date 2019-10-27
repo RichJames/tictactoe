@@ -19,20 +19,20 @@ std::vector<std::string> get_test_cases(std::string testfilename)
   return testcases;
 }
 
-bool test_board(Board &board)
+bool test_board(const std::shared_ptr<Board> &pBoard)
 {
-  auto test = [&board](std::string testcase) -> bool {
-    board.reset();
+  auto test = [pBoard](std::string testcase) -> bool {
+    pBoard->reset();
     int i = 1;
     char expected_result = testcase.back(); // get last character, which is the expected result code(w=winner, d=draw, c=continue)
     testcase.pop_back();                    // delete last character
     for (char move : testcase)
     {
       move = move == 'b' ? ' ' : move; // 'b' represents a blank cell in the test file
-      board.mark_move(i++, move);
+      pBoard->mark_move(i++, move);
     }
     std::cout << "Testcase: " << testcase << ' ';
-    auto [game_end, winner_found] = board.check_for_winner();
+    auto [game_end, winner_found] = pBoard->check_for_winner();
     bool test_passed = false;
 
     if (expected_result == 'w' && winner_found && game_end)

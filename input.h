@@ -1,5 +1,5 @@
-#ifndef __INPUT_H
-#define __INPUT_H
+#ifndef __RICH_PROGRAMMING_CPP_TICTACTOE_INPUT_H
+#define __RICH_PROGRAMMING_CPP_TICTACTOE_INPUT_H
 
 #include <iostream>
 #include <sstream>
@@ -11,8 +11,39 @@ struct input_t
 {
   // mutable T &n;
   T &n;
+
   explicit input_t(T &n) : n(n) {}
   input_t(const input_t<T> &i) : n(i.n) {}
+
+  T &getN() { return n; }
+
+  input_t(input_t &&) = delete;
+  input_t &operator=(const input_t &) = delete;
+  input_t &operator=(const input_t &&) = delete;
+  ~input_t() = default;
+
+  friend std::istream &operator>>(std::istream &ins, const input_t<T> &i)
+  {
+    // Read a line (terminated by ENTER|NEWLINE) from the user
+    std::string s;
+    getline(ins, s);
+
+    // Get rid of any trailing whitespace
+    s.erase(s.find_last_not_of(" \f\n\r\t\v") + 1);
+
+    // Read it into the target type
+    std::istringstream ss(s);
+    // T &n = i.getN();
+    ss >> i.n;
+
+    // Check to see that there is nothing left over
+    if (!ss.eof())
+    {
+      ins.setstate(std::ios::failbit);
+    }
+
+    return ins;
+  }
 };
 
 //----------------------------------------------------------------------------
@@ -25,26 +56,29 @@ input(T &n)
 }
 
 //----------------------------------------------------------------------------
-template <typename T>
-std::istream &operator>>(std::istream &ins, const input_t<T> &i)
-{
-  // Read a line (terminated by ENTER|NEWLINE) from the user
-  std::string s;
-  getline(ins, s);
+// template <typename T>
+// std::istream &operator>>(std::istream &ins, const input_t<T> &i)
+// {
+//   // Read a line (terminated by ENTER|NEWLINE) from the user
+//   std::string s;
+//   getline(ins, s);
 
-  // Get rid of any trailing whitespace
-  s.erase(s.find_last_not_of(" \f\n\r\t\v") + 1);
+//   // Get rid of any trailing whitespace
+//   s.erase(s.find_last_not_of(" \f\n\r\t\v") + 1);
 
-  // Read it into the target type
-  std::istringstream ss(s);
-  ss >> i.n;
+//   // Read it into the target type
+//   std::istringstream ss(s);
+//   // T &n = i.getN();
+//   ss >> i.n;
 
-  // Check to see that there is nothing left over
-  if (!ss.eof())
-    ins.setstate(std::ios::failbit);
+//   // Check to see that there is nothing left over
+//   if (!ss.eof())
+//   {
+//     ins.setstate(std::ios::failbit);
+//   }
 
-  return ins;
-}
+//   return ins;
+// }
 //----------------------------------------------------------------------------
 template <typename T>
 T getinput(const std::string &prompt)
@@ -65,4 +99,4 @@ T getinput(const std::string &prompt)
 
   return n;
 }
-#endif // __INPUT_H
+#endif // __RICH_PROGRAMMING_CPP_TICTACTOE_INPUT_H
