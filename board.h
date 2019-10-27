@@ -47,7 +47,8 @@ public:
 
       // is move legal?
       // if (_board[pos] == ' ')
-      if (gsl::at(_board, pos) == ' ')
+      // if (gsl::at(_board, pos) == ' ')
+      if (safeboard[pos] == ' ')
       {
         safeboard[pos] = move;
         return true;

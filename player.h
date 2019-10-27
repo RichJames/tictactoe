@@ -1,12 +1,12 @@
 #ifndef __RICH_PROGRAMMING_CPP_TICTACTOE_PLAYER_H
 #define __RICH_PROGRAMMING_CPP_TICTACTOE_PLAYER_H
 
+#include "RandomNumberGenerator.h"
 #include "board.h"
 #include "input.h"
-#include "RandomNumberGenerator.h"
 
-#include <string>
 #include <random>
+#include <string>
 
 enum class Player_Type
 {
@@ -95,7 +95,7 @@ public:
     std::shared_ptr<Board> pBoard = getBoard();
     do
     {
-      move = RandomNumberGenerator::getRandomNumber(1, 9);
+      move = RandomNumberGenerator::getRandomNumber(1, number_of_squares);
     } while (!pBoard->mark_move(move, mark));
 
     // return 2;

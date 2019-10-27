@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "board.h"
 #include "input.h"
@@ -31,7 +31,7 @@ std::string GetPlayerName(const std::string &prompt)
   while (true)
   {
     playername = getinput<std::string>(prompt);
-    if (playername.size() > 0)
+    if (playername.empty())
     {
       break;
     }
@@ -39,7 +39,7 @@ std::string GetPlayerName(const std::string &prompt)
 
   return playername;
 }
-pPlayer assignPlayer(std::string &playername, Player_Type player_type, Player_Order player_order, const std::shared_ptr<Board> &pBoard)
+pPlayer assignPlayer(const std::string &playername, Player_Type player_type, Player_Order player_order, const std::shared_ptr<Board> &pBoard)
 {
   pPlayer player;
 
@@ -137,7 +137,7 @@ int main(/* int argc, char const *argv[]*/)
   }
   else
   {
-    secondplayername = firstplayername == "Computer 1" ? "Computer 2" : "Computer 1";
+    secondplayername = (firstplayername == "Computer 1") ? std::string("Computer 2") : std::string("Computer 1");
   }
 
   pPlayer player1 = assignPlayer(firstplayername, first_player_type, Player_Order::first_player, ptrBoard);
