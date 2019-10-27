@@ -3,6 +3,8 @@
 
 #include "tests.h"
 
+#define TESTFILENAME "tests.dat"
+
 std::vector<std::string> get_test_cases(std::string testfilename)
 {
   std::vector<std::string> testcases;
@@ -50,7 +52,7 @@ bool test_board(const std::shared_ptr<Board> &pBoard)
     return test_passed;
   };
 
-  auto testcases = get_test_cases("tests.txt");
+  auto testcases = get_test_cases(TESTFILENAME);
 
   bool test_success = true;
   for (auto testcase : testcases)

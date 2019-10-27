@@ -3,16 +3,30 @@
 
 #include "board.h"
 #include "input.h"
+#include "RandomNumberGenerator.h"
 
 #include <string>
+#include <random>
+
+enum class Player_Type
+{
+  human,
+  computer
+};
+
+enum class Player_Order
+{
+  first_player,
+  second_player
+};
 
 class Player
 {
 public:
   Player() = delete;
 
-  Player(std::string name, bool first_player, std::shared_ptr<Board> pBoard)
-      : _name(std::move(name)), _first(first_player), _board(std::move(pBoard))
+  Player(std::string name, Player_Order player_order, std::shared_ptr<Board> pBoard)
+      : _name(std::move(name)), _player_order(player_order), _board(std::move(pBoard))
   {
   }
 
@@ -21,18 +35,18 @@ public:
   virtual void Info()
   {
     std::cout << "My name is: " << _name << '\n';
-    std::string player_order = _first ? "first" : "second";
+    std::string player_order = isFirst() ? "first" : "second";
     std::cout << "I am the " << player_order << " player\n";
     std::cout << std::flush;
   }
 
   const std::string &getName() { return _name; }
-  bool isFirst() { return _first; }
+  bool isFirst() { return _player_order == Player_Order::first_player ? true : false; }
   std::shared_ptr<Board> getBoard() { return _board; }
 
 private:
   std::string _name;
-  bool _first;
+  Player_Order _player_order;
   std::shared_ptr<Board> _board;
 };
 
@@ -40,8 +54,8 @@ class HumanPlayer : public Player
 {
 public:
   HumanPlayer() = delete;
-  HumanPlayer(std::string name, bool first_player, std::shared_ptr<Board> pBoard)
-      : Player(std::move(name), first_player, std::move(pBoard)), _prompt(getName() + " - Enter a move: ")
+  HumanPlayer(std::string name, Player_Order player_order, std::shared_ptr<Board> pBoard)
+      : Player(std::move(name), player_order, std::move(pBoard)), _prompt(getName() + " - Enter a move: ")
   {
   }
 
@@ -70,14 +84,24 @@ class ComputerPlayer : public Player
 {
 public:
   ComputerPlayer() = delete;
-  ComputerPlayer(std::string name, bool first_player, std::shared_ptr<Board> pBoard)
-      : Player(std::move(name), first_player, std::move(pBoard))
+  ComputerPlayer(std::string name, Player_Order player_order, std::shared_ptr<Board> pBoard)
+      : Player(std::move(name), player_order, std::move(pBoard))
   {
   }
   void Move() override
   {
+    int move;
+    char mark = isFirst() ? 'X' : 'O';
+    std::shared_ptr<Board> pBoard = getBoard();
+    do
+    {
+      move = RandomNumberGenerator::getRandomNumber(1, 9);
+    } while (!pBoard->mark_move(move, mark));
+
     // return 2;
   }
+
+private:
 };
 
 #endif // __RICH_PROGRAMMING_CPP_TICTACTOE_PLAYER_H

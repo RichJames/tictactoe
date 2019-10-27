@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <string>
 
 #include "board.h"
 #include "input.h"
@@ -9,7 +10,7 @@
 
 using pPlayer = std::shared_ptr<Player>;
 
-int ChoosePlayer(const std::string &prompt)
+Player_Type ChoosePlayer(const std::string &prompt)
 {
   int player = -1;
   while (true)
@@ -21,22 +22,34 @@ int ChoosePlayer(const std::string &prompt)
     }
   }
 
-  return player;
+  return player == 1 ? Player_Type::human : Player_Type::computer;
 }
 
-// pPlayer assignPlayer(int i, bool first_player, Board &board)
-pPlayer assignPlayer(int i, bool first_player, const std::shared_ptr<Board> &pBoard)
+std::string GetPlayerName(const std::string &prompt)
 {
-  // FIX:  Need to improve naming of players.  e.g. Human 1, Human 2 when two humans playing.  Or, get their names.
+  std::string playername;
+  while (true)
+  {
+    playername = getinput<std::string>(prompt);
+    if (playername.size() > 0)
+    {
+      break;
+    }
+  }
+
+  return playername;
+}
+pPlayer assignPlayer(std::string &playername, Player_Type player_type, Player_Order player_order, const std::shared_ptr<Board> &pBoard)
+{
   pPlayer player;
 
-  if (i == 1)
+  if (player_type == Player_Type::human)
   {
-    player = std::make_shared<HumanPlayer>("Human", first_player, pBoard);
+    player = std::make_shared<HumanPlayer>(playername, player_order, pBoard);
   }
   else
   {
-    player = std::make_shared<ComputerPlayer>("Computer", first_player, pBoard);
+    player = std::make_shared<ComputerPlayer>(playername, player_order, pBoard);
   }
   return player;
 }
@@ -69,17 +82,12 @@ void play_game(const pPlayer &player1, const pPlayer &player2, const std::shared
     currentPlayer = (currentPlayer == player1) ? player2 : player1;
   }
 
-  // FIX:  Need a switch or something here to control if/when we run these tests
-  // if (test_board(board))
-  //   std::cout << "**** All tests passed!!! ****\n";
-  // else
-  //   std::cout << "!!!!!!! At least one test failed !!!!!!!\n";
-
   std::cout << std::flush;
 }
 
 #define NORMAL_RUN
 // #define TEST_RUN
+// #define TEST_WINNER_DETECTION
 
 int main(/* int argc, char const *argv[]*/)
 {
@@ -94,15 +102,53 @@ int main(/* int argc, char const *argv[]*/)
   ptrBoard->display();
 #endif // TEST_RUN
 
+#ifdef TEST_WINNER_DETECTION
+  // FIX:  Need a switch or something here to control if/when we run these tests
+  if (test_board(ptrBoard))
+  {
+    std::cout << "**** All tests passed!!! ****\n";
+  }
+  else
+  {
+    std::cout << "!!!!!!! At least one test failed !!!!!!!\n";
+  }
+#endif // TEST_WINNER_DETECTION
+
 #ifdef NORMAL_RUN
   std::cout << "Welcome to Tic Tac Toe!" << std::endl
             << std::endl;
 
-  int first = ChoosePlayer("Who will be player 1 (1=human, 2=computer)? ");
-  int second = ChoosePlayer("Who will be player 2 (1=human, 2=computer)? ");
+  Player_Type first_type = ChoosePlayer("Who will be player 1 (1=human, 2=computer)? ");
+  std::string firstplayername;
+  if (first_type == Player_Type::human)
+  {
+    firstplayername = GetPlayerName("Enter player 1's name: ");
+  }
+  else
+  {
+    firstplayername = "Computer 1";
+  }
 
-  pPlayer player1 = assignPlayer(first, true, ptrBoard);
-  pPlayer player2 = assignPlayer(second, false, ptrBoard);
+  Player_Type second_type = ChoosePlayer("\nWho will be player 2 (1=human, 2=computer)? ");
+  std::string secondplayername;
+  if (second_type == Player_Type::human)
+  {
+    secondplayername = GetPlayerName("Enter player 2's name: ");
+  }
+  else
+  {
+    if (firstplayername == "Computer 1")
+    {
+      secondplayername = "Computer 2";
+    }
+    else
+    {
+      secondplayername = "Computer 1";
+    }
+  }
+
+  pPlayer player1 = assignPlayer(firstplayername, first_type, Player_Order::first_player, ptrBoard);
+  pPlayer player2 = assignPlayer(secondplayername, second_type, Player_Order::second_player, ptrBoard);
 
   // player1->Info();
   // player2->Info();
