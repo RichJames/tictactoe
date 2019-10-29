@@ -1,0 +1,20 @@
+I have a test program in this project to learn how to connect and interact with a mysql database.
+The code is in mysql.cpp.
+
+To compile and link this code, run the following:
+
+$ g++ mysql.cpp -I/opt/lampp/include -L/opt/lampp/lib -lmysqlclient -o testmysql
+
+This code interacts with the db1 database in the XAMPP mysql instance.  It reads, updates and
+deletes records in the user table of that database.
+
+There are a number of things I need to do, listed below, to make this a more robust and secure
+application.
+
+To Do:
+- Find and use mysql_config_editor to create a secure .mylogin.cnf file.
+- Update code to pull connection information from .mylogin.cnf and .my.cnf
+- Create makefile to simplify building this code
+- After creating makefile, revert changes in .bashrc that added /opt/lampp/lib to the LD_LIBRARY_PATH
+- Clean up the inclusion of libmariadb.so.3 in this project.
+- 

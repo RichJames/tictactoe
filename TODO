@@ -5,3 +5,4 @@ TO Do:  Take in command line arguments to flag for tests, normal run, etc.
 To Do:  Book project into GitHub
 To Do:  Build a web front-end
 To Do:  Make computer logic smarter.
+To Do:  Run cppcheck against code.
