@@ -6,3 +6,5 @@ To Do:  Book project into GitHub
 To Do:  Build a web front-end
 To Do:  Make computer logic smarter.
 To Do:  Run cppcheck against code.
+To Do:  Save games into a database -- maybe have AI use this to make better moves.
+To Do:  Set up and test interacting with a Postgres database.

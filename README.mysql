@@ -5,16 +5,43 @@ To compile and link this code, run the following:
 
 $ g++ mysql.cpp -I/opt/lampp/include -L/opt/lampp/lib -lmysqlclient -o testmysql
 
+Alternatively, you can run:
+
+$ make testmysql
+
 This code interacts with the db1 database in the XAMPP mysql instance.  It reads, updates and
 deletes records in the user table of that database.
+
+For the program to successfully connect to the database, there must be a properly configured 
+my.cnf file with a group called testmysql, with the following params specified:
+
+ [testmysql]
+  port=
+  socket=
+  host=
+  user=
+  password=
+
+"port" is the port the mysql database is configured to use.  
+'socket' is the full path and name of the socket file.  E.g. /opt/lampp/var/mysql/socketfile.socket
+'host' is the IP address of the mysql database server.  Use localhost if you are using a local instance of mysql.
+'user' is the user account in the datbase that has permissions to read and update the db1 database.
+'password' is the user's password.  This will be in clear text in the config file, so ensure that file is secure.
+
+Securing the user's password is outside the scope of this project.  I used XAMPP's mariaDB (OSS version of mysql)
+and it provides no way to directly secure the password, other than to prompt for it at run time.  This program 
+could do that, but I intend for it to have a web front end and don't want to ask user's for the password. The
+mariaDB folks make a good case that the password encryption abilities offered by mysql are really not secure and
+just create a false sense of security.
+
+The program needs to be able to find the dynamic library, libmariadb.so.3, at runtime.  XXAMP provides this file
+at /opt/lampp/lib.  To make it accessible, either copy libmariadb.so.3 into the same directory as this program or
+create a new file in /etc/ld.so.conf.d and add the library path to that file.  Then, as root, run ldconfig to update
+the cache of dynamic libraries.
 
 There are a number of things I need to do, listed below, to make this a more robust and secure
 application.
 
 To Do:
-- Find and use mysql_config_editor to create a secure .mylogin.cnf file.
-- Update code to pull connection information from .mylogin.cnf and .my.cnf
-- Create makefile to simplify building this code
 - After creating makefile, revert changes in .bashrc that added /opt/lampp/lib to the LD_LIBRARY_PATH
-- Clean up the inclusion of libmariadb.so.3 in this project.
 - 

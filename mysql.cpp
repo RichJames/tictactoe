@@ -51,10 +51,9 @@ int main()
 
   if (conn != NULL)
   {
-    int mysqlport = 3306;
-    const char socket[] = "/opt/lampp/var/mysql/mysql.sock";
-
-    MYSQL *conn_confirm = mysql_real_connect(conn, "localhost", "db1user", "1f3maps", "db1", mysqlport, socket, 0);
+    const char config_group[] = "testmysql";
+    mysql_options(conn, MYSQL_READ_DEFAULT_GROUP, config_group);
+    MYSQL *conn_confirm = mysql_real_connect(conn, NULL, NULL, NULL, "db1", 0, NULL, 0);
 
     if (conn_confirm == conn)
     {
