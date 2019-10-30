@@ -3,7 +3,7 @@ The code is in mysql.cpp.
 
 To compile and link this code, run the following:
 
-$ g++ mysql.cpp -I/opt/lampp/include -L/opt/lampp/lib -lmysqlclient -o testmysql
+$ g++ mysql.cpp -I/opt/lampp/include ${LDFLAGS} -lmysqlclient -Wl,--enable-new-dtags,-rpath,/opt/lampp/lib -o testmysql
 
 Alternatively, you can run:
 
@@ -11,6 +11,14 @@ $ make testmysql
 
 This code interacts with the db1 database in the XAMPP mysql instance.  It reads, updates and
 deletes records in the user table of that database.
+
+Note that the program needs to be able to find the dynamic library, libmariadb.so.3, at runtime.  XXAMP provides this file
+at /opt/lampp/lib. The compilation and linking depend on the mysql.h file being located in /opt/lampp/include and the associated
+library (libmysqlclient) being in /opt/lampp/lib.  Modify the compile/link command as needed for your setup.  
+
+Also note that we link in the runpath (/opt/lampp/lib) in the executable so it knows where to try to find the libmariadb.so.3
+file.  It will also look for it in the paths specified by LD_LIBRARY_PATH in the environment and will search
+runpath if it can't find it using LD_LIBRARY_PATH.
 
 For the program to successfully connect to the database, there must be a properly configured 
 my.cnf file with a group called testmysql, with the following params specified:
@@ -34,14 +42,8 @@ could do that, but I intend for it to have a web front end and don't want to ask
 mariaDB folks make a good case that the password encryption abilities offered by mysql are really not secure and
 just create a false sense of security.
 
-The program needs to be able to find the dynamic library, libmariadb.so.3, at runtime.  XXAMP provides this file
-at /opt/lampp/lib.  To make it accessible, either copy libmariadb.so.3 into the same directory as this program or
-create a new file in /etc/ld.so.conf.d and add the library path to that file.  Then, as root, run ldconfig to update
-the cache of dynamic libraries.
+Reminder:  since this code is using a mariaDB database under a XAMPP install, XAMPP needs to be started before this
+program will be able to connect to the database.  To start XAMPP:
 
-There are a number of things I need to do, listed below, to make this a more robust and secure
-application.
+$ sudo /opt/lampp/xampp start
 
-To Do:
-- After creating makefile, revert changes in .bashrc that added /opt/lampp/lib to the LD_LIBRARY_PATH
-- 
