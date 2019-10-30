@@ -1,5 +1,4 @@
 #include <iostream>
-// #include "/opt/lampp/include/mysql.h"
 #include "mysql.h"
 
 // To compile and link this:

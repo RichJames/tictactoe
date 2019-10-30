@@ -47,7 +47,7 @@ public:
 
       // is move legal?
       // if (_board[pos] == ' ')
-      // if (gsl::at(_board, pos) == ' ')
+      // if (safeboard, pos) == ' ')
       if (safeboard[pos] == ' ')
       {
         safeboard[pos] = move;
@@ -62,14 +62,14 @@ public:
   std::tuple<bool, bool> check_for_winner()
   {
     // returns a tuple of two bools.  1st bool is if game ends.  2nd bool is if winner found.
-
+    gsl::span<char> safeboard{_board}; // enable compiler checking of array bounds
     // determince if there is a winner
     // check rows
     const int squares_per_row = 3;
+
     for (int i = 0; i < number_of_squares; i += squares_per_row)
     {
-      // if ((_board[i] == _board[i + 1]) && (_board[i] == _board[i + 2]) && (_board[i] != ' '))
-      if ((gsl::at(_board, i) == gsl::at(_board, i + 1)) && (gsl::at(_board, i) == gsl::at(_board, i + 2)) && (gsl::at(_board, i) != ' '))
+      if ((safeboard[i] == safeboard[i + 1]) && (safeboard[i] == safeboard[i + 2]) && (safeboard[i] != ' '))
       {
         return {true, true};
       }
@@ -78,18 +78,17 @@ public:
     const int number_of_columns = 3;
     for (int i = 0; i < number_of_columns; ++i)
     {
-      // if ((_board[i] == _board[i + squares_per_row]) && (_board[i] == _board[i + 2 * squares_per_row]) && (_board[i] != ' '))
-      if ((gsl::at(_board, i) == gsl::at(_board, i + squares_per_row)) && (gsl::at(_board, i) == gsl::at(_board, i + 2 * squares_per_row)) && (gsl::at(_board, i) != ' '))
+      if ((safeboard[i] == safeboard[i + squares_per_row]) && (safeboard[i] == safeboard[i + 2 * squares_per_row]) && (safeboard[i] != ' '))
       {
         return {true, true};
       }
     }
     // check diagonals
-    if ((gsl::at(_board, top_lft) == gsl::at(_board, ctr)) && (gsl::at(_board, top_lft) == gsl::at(_board, bot_rgt)) && (gsl::at(_board, top_lft) != ' '))
+    if ((safeboard[top_lft] == safeboard[ctr]) && (safeboard[top_lft] == safeboard[bot_rgt]) && (safeboard[top_lft] != ' '))
     {
       return {true, true};
     }
-    if ((gsl::at(_board, top_rgt) == gsl::at(_board, ctr)) && (gsl::at(_board, top_rgt) == gsl::at(_board, bot_lft)) && (gsl::at(_board, top_rgt) != ' '))
+    if ((safeboard[top_rgt] == safeboard[ctr]) && (safeboard[top_rgt] == safeboard[bot_lft]) && (safeboard[top_rgt] != ' '))
     {
       return {true, true};
     }
@@ -97,7 +96,7 @@ public:
     // check for draw
     for (int i = 0; i < number_of_squares; ++i)
     {
-      if (gsl::at(_board, i) == ' ') // did we find an unplayed space?
+      if (safeboard[i] == ' ') // did we find an unplayed space?
       {
         return {false, false}; // game doesn't end, no winner found
       }
