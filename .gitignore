@@ -1,3 +1,6 @@
 a.out
 *.sw?
 *.txt
+*.o
+tictactoe
+testmysql
