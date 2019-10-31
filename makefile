@@ -6,10 +6,10 @@ testmysql:
 tictactoe: main.o randomnumbergenerator.o
 	g++ -o tictactoe main.o randomnumbergenerator.o
 
-main.o : main.cpp
+main.o : main.cpp board.h input.h player.h tests.h
 	g++ -c -o main.o main.cpp -std=c++17
 
-randomnumbergenerator : randomnumbergenerator.cpp
+randomnumbergenerator.o : randomnumbergenerator.cpp RandomNumberGenerator.h
 	g++ -c -o randomnumbergenerator.o randomnumbergenerator.cpp -std=c++17
 	
 clean:
