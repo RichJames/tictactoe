@@ -34,6 +34,8 @@ public:
   void reset();
   void save_board();
   void show_saved_games();
+  const std::set<std::string> &get_saved_games() { return _saved_games; }
+  const std::string get_board() { return {std::begin(_board), std::end(_board)}; }
 
   ~Board()
   {

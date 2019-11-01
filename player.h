@@ -88,18 +88,7 @@ public:
       : Player(std::move(name), player_order, std::move(pBoard))
   {
   }
-  void Move() override
-  {
-    int move;
-    char mark = isFirst() ? 'X' : 'O';
-    std::shared_ptr<Board> pBoard = getBoard();
-    do
-    {
-      move = RandomNumberGenerator::getRandomNumber(1, number_of_squares);
-    } while (!pBoard->mark_move(move, mark));
-
-    // return 2;
-  }
+  void Move() override;
 
 private:
 };
