@@ -67,7 +67,7 @@ void play_game(const pPlayer &player1, const pPlayer &player2, const std::shared
   {
     currentPlayer->Move();
     pBoard->display();
-    auto [game_end, winner_found] = pBoard->check_for_winner();
+    auto [game_end, winner_found, winner_mark] = pBoard->check_for_winner();
     if (game_end && winner_found)
     {
       std::cout << "Game ends.  " << currentPlayer->getName() << " wins!\n";
@@ -81,6 +81,7 @@ void play_game(const pPlayer &player1, const pPlayer &player2, const std::shared
 
     currentPlayer = (currentPlayer == player1) ? player2 : player1;
   }
+  pBoard->save_board();
 
   std::cout << std::flush;
 }
@@ -101,6 +102,8 @@ int main(/* int argc, char const *argv[]*/)
   ptrBoard->reset();
   std::cout << "Displaying board after reset:\n";
   ptrBoard->display();
+  std::cout << "Testing board connection to database\n";
+  ptrBoard->save_board();
 #endif // TEST_RUN
 
 #ifdef TEST_WINNER_DETECTION

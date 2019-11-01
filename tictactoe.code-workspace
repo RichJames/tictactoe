@@ -50,7 +50,9 @@
 			"memory_resource": "cpp",
 			"random": "cpp",
 			"string": "cpp",
-			"bit": "cpp"
+			"bit": "cpp",
+			"cinttypes": "cpp",
+			"set": "cpp"
 		}
 	}
 }

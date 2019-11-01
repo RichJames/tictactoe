@@ -1,10 +1,11 @@
 TO DO:
 
-- clean up player setup & initialization.  Package all this into a separate routine.
 - Save games into a database -- maybe have AI use this to make better moves.
+- clean up player setup & initialization.  Package all this into a separate routine.
 - run tidy-clang again and fix issues found
 - Run cppcheck against code.
 - Build a web front-end
+- Redo database interface via RESTful API
 - Take in command line arguments to flag for tests, normal run, etc.
 - Make computer logic smarter.
 - Set up and test interacting with a Postgres database.
