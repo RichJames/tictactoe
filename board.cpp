@@ -88,54 +88,14 @@ std::tuple<bool, bool, char> Board::check_for_winner()
   return {true, false, 'D'}; // game ends, no winner found
 }
 
-void Board::reset()
+void Board::save_board()
 {
-  gsl::span<char> safeboard{_board};
-
-  for (auto &cell : safeboard)
+  // Check if we have a database connection.  Don't do anything if we don't have one.
+  if (_conn == NULL)
   {
-    cell = ' ';
+    return;
   }
-}
 
-bool Board::save_board()
-{
-  // Save board to database
-
-  // Connect to database
-  MYSQL *conn = mysql_init(NULL);
-
-  if (conn != NULL)
-  {
-    const char config_group[] = "tictactoe";
-
-    mysql_options(conn, MYSQL_READ_DEFAULT_GROUP, config_group);
-
-    MYSQL *conn_confirm = mysql_real_connect(conn, NULL, NULL, NULL, "tictactoe", 0, NULL, 0);
-
-    if (conn_confirm == conn)
-    {
-      // Check if board state is already in the database.  We do this because we want
-      // unique games saved.  This can become input to an improved AI later.
-
-      // If we have a unique game, save the game
-      // Close the database connection
-      std::cout << "Board::save_board() connect to database:  Success\n";
-      _saveboarddata(conn);
-      mysql_close(conn);
-    }
-    else
-    {
-      std::cerr << "Failed to connect to database.  Error: " << mysql_error(conn) << '\n';
-      return false;
-    }
-  }
-  // Return true if no errors
-  return true;
-}
-
-void Board::_saveboarddata(MYSQL *conn)
-{
   // Check if game ended.  Only save games that have ended.
   auto [game_end, ignore2, winning_mark] = check_for_winner();
   if (!game_end)
@@ -149,7 +109,7 @@ void Board::_saveboarddata(MYSQL *conn)
   game_pattern += winning_mark;
 
   // Check if game is already in the database.  Only save unique games.
-  if (_isgamesaved(conn, game_pattern))
+  if (_isgamesaved(game_pattern))
   {
     return;
   }
@@ -160,36 +120,80 @@ void Board::_saveboarddata(MYSQL *conn)
   query += "')";
 
   // Call database with SQL
-  int result = mysql_query(conn, query.c_str());
+  int result = mysql_query(_conn, query.c_str());
   if (result != 0)
   {
     std::cerr << "Game save failed.  Error: " << result << '\n';
   }
+  else
+  {
+    // Game is saved in the database now.  Also, put saved game in our saved_games set:
+    _saved_games.emplace(game_pattern);
+    show_saved_games();
+  }
 }
 
-bool Board::_isgamesaved(MYSQL *conn, const std::string &search_pattern)
+void Board::reset()
 {
-  // retrieve and display data
+  gsl::span<char> safeboard{_board};
 
-  // std::string game_pattern(std::begin(_board), std::end(_board));
+  for (auto &cell : safeboard)
+  {
+    cell = ' ';
+  }
+}
 
-  // auto [ignore1, ignore2, winning_mark] = check_for_winner();
-  // game_pattern += winning_mark;
-  // std::cout << "Search strings is: >" << game_pattern << "<\n";
+void Board::show_saved_games()
+{
+  // Display games read from database:
+  std::cout << "Games read from database:\n";
+  for (auto game : _saved_games)
+  {
+    std::cout << game << '\n';
+  }
+}
 
-  // std::cout << "Size of _board is: " << _board.size() << '\n';
+MYSQL *Board::_connect_to_db()
+{
+  // Connect to database
+  MYSQL *conn = mysql_init(NULL);
+
+  if (conn != NULL)
+  {
+    const char config_group[] = "tictactoe";
+
+    mysql_options(conn, MYSQL_READ_DEFAULT_GROUP, config_group);
+
+    MYSQL *conn_confirm = mysql_real_connect(conn, NULL, NULL, NULL, "tictactoe", 0, NULL, 0);
+
+    if (conn_confirm != conn)
+    {
+      std::cerr << "Failed to connect to database.  Error: " << mysql_error(conn) << '\n';
+    }
+  }
+  return conn;
+}
+
+bool Board::_isgamesaved(const std::string &search_pattern)
+{
+  // Check if we have a database connection.  If not, bail.
+  if (_conn == NULL)
+  {
+    return false;
+  }
+
   std::string query = "SELECT game FROM games WHERE (game LIKE '";
   query += search_pattern;
   query += "')";
 
   std::cout << "Query is: " << query << '\n';
 
-  int res = mysql_query(conn, query.c_str());
+  int res = mysql_query(_conn, query.c_str());
   if (res != 0)
   {
     std::cerr << "Game search failed.  Error: " << res << '\n';
   }
-  MYSQL_RES *result = mysql_store_result(conn);
+  MYSQL_RES *result = mysql_store_result(_conn);
   if (mysql_num_rows(result) == 0)
   {
     return false;
@@ -198,28 +202,48 @@ bool Board::_isgamesaved(MYSQL *conn, const std::string &search_pattern)
   {
     return true;
   }
+}
 
-  // unsigned int num_fields = mysql_num_fields(result);
-  // if (num_fields > 1)
-  // {
-  //   std::cerr << "Unexpectedly got more than 1 field from the database\n";
-  //   return;
-  // }
+void Board::_getsavedgames()
+{
+  // Check for database connection.  Bail if we don't have one.
+  if (_conn == NULL)
+  {
+    return;
+  }
 
-  // std::set<std::string> games;
-  // // MYSQL_ROW row;
-  // while (MYSQL_ROW row = mysql_fetch_row(result))
-  // {
-  //   std::string game = row[0];
-  //   games.insert(game);
-  // }
+  std::string query = "SELECT game FROM games";
 
-  // // Display games read from database:
-  // std::cout << "Games read from database:\n";
-  // for (auto game : games)
-  // {
-  //   std::cout << game << '\n';
-  // }
+  int res = mysql_query(_conn, query.c_str());
+  if (res != 0)
+  {
+    std::cerr << "Query for saved games failed.  Error: " << res << '\n';
+    return;
+  }
 
-  // mysql_free_result(result); // clear result set from memory
+  MYSQL_RES *result = mysql_store_result(_conn);
+  if (mysql_num_rows(result) == 0)
+  {
+    // No saved games, so nothing to put in the set.
+    return;
+  }
+
+  unsigned int num_fields = mysql_num_fields(result);
+  if (num_fields > 1)
+  {
+    std::cerr << "Unexpectedly got more than 1 field from the database\n";
+    return;
+  }
+
+  // MYSQL_ROW row;
+  while (MYSQL_ROW row = mysql_fetch_row(result))
+  {
+    // std::string game = row[0];
+    _saved_games.emplace(row[0]);
+  }
+
+  mysql_free_result(result); // clear result set from memory
+
+  // Display games read from database:
+  show_saved_games();
 }
