@@ -57,7 +57,7 @@ pPlayer assignPlayer(const std::string &playername, Player_Type player_type, Pla
 // void play_game(pPlayer player1, pPlayer player2, Board &board)
 void play_game(const pPlayer &player1, const pPlayer &player2, const std::shared_ptr<Board> &pBoard)
 {
-  std::cout << "Playing the game...\n";
+  // std::cout << "Playing the game...\n";
 
   pBoard->display();
 

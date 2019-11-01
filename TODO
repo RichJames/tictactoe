@@ -1,7 +1,7 @@
 TO DO:
 
-- Have AI use game history to make better moves.
 - clean up player setup & initialization.  Package all this into a separate routine.
+- Add option to play again.
 - run tidy-clang again and fix issues found
 - Run cppcheck against code.
 - Build a web front-end

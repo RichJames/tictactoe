@@ -129,7 +129,7 @@ void Board::save_board()
   {
     // Game is saved in the database now.  Also, put saved game in our saved_games set:
     _saved_games.emplace(game_pattern);
-    show_saved_games();
+    // show_saved_games();
   }
 }
 
@@ -186,7 +186,7 @@ bool Board::_isgamesaved(const std::string &search_pattern)
   query += search_pattern;
   query += "')";
 
-  std::cout << "Query is: " << query << '\n';
+  // std::cout << "Query is: " << query << '\n';
 
   int res = mysql_query(_conn, query.c_str());
   if (res != 0)
