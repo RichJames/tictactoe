@@ -1,6 +1,7 @@
 TO DO:
 
-- clean up player setup & initialization.  Package all this into a separate routine.
+- Have AI avoid making losing moves
+- Clean up player setup & initialization.  Package all this into a separate routine.
 - Add option to play again.
 - run tidy-clang again and fix issues found
 - Run cppcheck against code.

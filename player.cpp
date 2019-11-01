@@ -83,14 +83,20 @@ void ComputerPlayer::Move()
             continue;
           }
         }
-        move = i;
+        // Moves are 1-based, so we have to add 1 to our selected move here:
+        move = i + 1;
         break;
       }
     }
+    std::cout << "Making smart move...\n"
+              << "Move is " << move << '\n'
+              << "My_mark is " << my_mark << '\n';
+
     pBoard->mark_move(move, my_mark);
   }
   else
   {
+    std::cout << "Making random move...\n";
     do
     {
       move = RandomNumberGenerator::getRandomNumber(1, number_of_squares);

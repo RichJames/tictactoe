@@ -245,5 +245,5 @@ void Board::_getsavedgames()
   mysql_free_result(result); // clear result set from memory
 
   // Display games read from database:
-  show_saved_games();
+  // show_saved_games();
 }
