@@ -10,6 +10,9 @@
       "args": [
         "-g",
         "${file}",
+        "${fileDirname}/randomnumbergenerator.cpp",
+        "${fileDirname}/board.cpp",
+        "${fileDirname}/player.cpp",
         "-o",
         "${fileDirname}/${fileBasenameNoExtension}",
         "-I/opt/lampp/include",

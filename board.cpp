@@ -15,29 +15,24 @@ void Board::display()
             << std::endl;
 }
 
-bool Board::mark_move(const unsigned int position, char move)
+bool Board::mark_move(int position, char move)
 {
   // update the board with the move
   // 1 = [0], 2 = [1], 3 = [2]
   // 4 = [3], 5 = [4], 6 = [5]
   // 7 = [6], 8 = [7], 9 = [8]
-
   if (position > 0 && position <= number_of_squares)
   {
     const unsigned int pos = position - 1; // User position is 1-based, array position is 0-based.
-
-    gsl::span<char> safeboard{_board}; // enable compiler checking of array bounds
+    gsl::span<char> safeboard{_board};     // enable compiler checking of array bounds
 
     // is move legal?
-    // if (_board[pos] == ' ')
-    // if (safeboard, pos) == ' ')
-    if (safeboard[pos] == ' ')
+    if (safeboard[pos] != 'X' && safeboard[pos] != 'Y')
     {
       safeboard[pos] = move;
       return true;
     }
   }
-
   return false; // illegal move
 }
 

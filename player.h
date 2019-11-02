@@ -26,7 +26,7 @@ public:
   Player() = delete;
 
   Player(std::string name, Player_Order player_order, std::shared_ptr<Board> pBoard)
-      : _name(std::move(name)), _player_order(player_order), _board(std::move(pBoard))
+      : _name(std::move(name)), _player_order(player_order), _board(pBoard) //_board(std::move(pBoard))
   {
   }
 
@@ -55,7 +55,8 @@ class HumanPlayer : public Player
 public:
   HumanPlayer() = delete;
   HumanPlayer(std::string name, Player_Order player_order, std::shared_ptr<Board> pBoard)
-      : Player(std::move(name), player_order, std::move(pBoard)), _prompt(getName() + " - Enter a move: ")
+      : Player(std::move(name), player_order, pBoard), _prompt(getName() + " - Enter a move: ")
+  // : Player(std::move(name), player_order, std::move(pBoard)), _prompt(getName() + " - Enter a move: ")
   {
   }
 
@@ -85,7 +86,8 @@ class ComputerPlayer : public Player
 public:
   ComputerPlayer() = delete;
   ComputerPlayer(std::string name, Player_Order player_order, std::shared_ptr<Board> pBoard)
-      : Player(std::move(name), player_order, std::move(pBoard))
+      : Player(std::move(name), player_order, pBoard)
+  // : Player(std::move(name), player_order, std::move(pBoard))
   {
   }
   void Move() override;

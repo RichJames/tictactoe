@@ -1,18 +1,13 @@
 #include "player.h"
 
+constexpr unsigned int invalid_move = 10;
+
 void ComputerPlayer::Move()
 {
-  int move;
-  char my_mark = isFirst() ? 'X' : 'O';
   std::shared_ptr<Board> pBoard = getBoard();
-
-  // Has current game state been played before?
-  const std::string board = pBoard->get_board();
+  const std::string board = pBoard->get_board_state();
   const std::set<std::string> &saved_games = pBoard->get_saved_games();
-
   std::set<std::string> subset;
-  std::set<std::string> subset2;
-  char draw_mark = 'D';
 
   // Get a list of games that match the current game's pattern
   for (auto game : saved_games)
@@ -38,6 +33,9 @@ void ComputerPlayer::Move()
     }
   }
 
+  std::set<std::string> subset2;
+  char my_mark = isFirst() ? 'X' : 'O';
+
   // From that list, get a list of those that ended up with me winning:
   for (auto game : subset)
   {
@@ -46,7 +44,9 @@ void ComputerPlayer::Move()
       subset2.emplace(game);
     }
   }
+
   // If no winning games found, try to find draws
+  char draw_mark = 'D';
   if (subset2.empty())
   {
     for (auto game : subset)
@@ -59,6 +59,7 @@ void ComputerPlayer::Move()
   }
 
   // If we have anything in our subset collection, use that to pick the next move
+  int move = invalid_move;
   if (!subset2.empty())
   {
     // Randomly pick a game from the subset:
@@ -88,18 +89,19 @@ void ComputerPlayer::Move()
         break;
       }
     }
-    std::cout << "Making smart move...\n"
-              << "Move is " << move << '\n'
-              << "My_mark is " << my_mark << '\n';
+  }
 
+  // Still a chance we didn't find a move using the history
+  if (move != invalid_move)
+  {
     pBoard->mark_move(move, my_mark);
   }
   else
   {
-    std::cout << "Making random move...\n";
     do
     {
       move = RandomNumberGenerator::getRandomNumber(1, number_of_squares);
+      std::cerr << "Move='" << move << "'" << std::endl;
     } while (!pBoard->mark_move(move, my_mark));
   }
 }

@@ -29,13 +29,13 @@ public:
     }
   }
   void display();
-  bool mark_move(const unsigned int position, char move);
+  bool mark_move(int position, char move);
   std::tuple<bool, bool, char> check_for_winner();
   void reset();
   void save_board();
   void show_saved_games();
   const std::set<std::string> &get_saved_games() { return _saved_games; }
-  const std::string get_board() { return {std::begin(_board), std::end(_board)}; }
+  const std::string get_board_state() { return {std::begin(_board), std::end(_board)}; }
 
   ~Board()
   {
