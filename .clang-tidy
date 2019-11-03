@@ -1,4 +1,5 @@
 #Checks: '*,-modernize-use-trailing-return-type,-readability-magic-numbers,-cppcoreguidelines-*,-fuchsia-*,-llvm-header-guard'
 #Checks: '*,-modernize-use-trailing-return-type,-cppcoreguidelines-*,-fuchsia-*,-llvm-header-guard'
 #Checks: '*,-modernize-use-trailing-return-type,-cppcoreguidelines-*,-llvm-header-guard,-hicpp-member-init,-misc-non-private-member-variables-in-classes'
-Checks: '*,-llvm-header-guard,-hicpp-member-init,-misc-non-private-member-variables-in-classes,-fuchsia-default-arguments-calls,-modernize-use-trailing-return-type,-fuchsia-*'
+#Checks: '*,-llvm-header-guard,-hicpp-member-init,-misc-non-private-member-variables-in-classes,-fuchsia-default-arguments-calls,-modernize-use-trailing-return-type,-fuchsia-*'
+Checks: '*,-llvm-header-guard,-hicpp-member-init,-misc-non-private-member-variables-in-classes,-fuchsia-default-arguments-calls,-modernize-use-trailing-return-type,-fuchsia-*,-readability-convert-member-functions-to-static,-bugprone-branch-clone,-misc-unused-parameters,-cppcoreguidelines-pro-type-member-init'

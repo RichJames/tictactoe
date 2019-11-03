@@ -1,28 +1,47 @@
 #LDFLAGS="-L/opt/lampp/lib"
+COMPILER="clang++-9"
+#COMPILER="g++"
 
 testmysql: 
-	g++ mysql.cpp -I/opt/lampp/include ${LDFLAGS} -lmysqlclient -Wl,--enable-new-dtags,-rpath,/opt/lampp/lib -o testmysql
+	${COMPILER} mysql.cpp -I/opt/lampp/include ${LDFLAGS} -lmysqlclient -Wl,--enable-new-dtags,-rpath,/opt/lampp/lib -o testmysql
 
 tictactoe: main.o randomnumbergenerator.o board.o player.o tests.o
-	g++ -o tictactoe main.o randomnumbergenerator.o board.o player.o tests.o ${LDFLAGS} -lmysqlclient
+	${COMPILER}  -o tictactoe main.o randomnumbergenerator.o board.o player.o tests.o ${LDFLAGS} -lmysqlclient
 
 main.o : main.cpp board.h input.h player.h tests.h
-	g++ -c -o main.o main.cpp -I/opt/lampp/include -std=c++17
+	${COMPILER}  -c -o main.o main.cpp -I/opt/lampp/include -std=c++17
 
 randomnumbergenerator.o : randomnumbergenerator.cpp RandomNumberGenerator.h
-	g++ -c -o randomnumbergenerator.o randomnumbergenerator.cpp -std=c++17
+	${COMPILER}  -c -o randomnumbergenerator.o randomnumbergenerator.cpp -std=c++17
 	
 board.o : board.cpp board.h gsl-lite.hpp
-	g++ -c -o board.o board.cpp -I/opt/lampp/include -lmysqlclient -std=c++17 
+	${COMPILER}  -c -o board.o board.cpp -I/opt/lampp/include -std=c++17 
 
 player.o : player.cpp player.h input.h
-	g++ -c -o player.o player.cpp -I/opt/lampp/include -lmysqlclient -std=c++17 
+	${COMPILER}  -c -o player.o player.cpp -I/opt/lampp/include -std=c++17 
 
-tests.o : tests.h
-	g++ -c -o tests.o tests.cpp -I/opt/lampp/include -lmysqlclient -std=c++17 
+tests.o : tests.cpp tests.h
+	${COMPILER}  -c -o tests.o tests.cpp -I/opt/lampp/include -std=c++17 
 
 clean:
-	rm testmysql inputtest a.out *.o
+	rm testmysql inputtest a.out *.o *tidy.txt
 
 realclean:
 	rm testmysql a.out *.o tictactoe
+
+maintidy:
+	clang-tidy-9 --header-filter='.h' --extra-arg='-std=c++17' main.cpp > maintidy.txt
+
+boardtidy:
+	clang-tidy-9 --header-filter='.h' --extra-arg='-std=c++17' board.cpp > boardtidy.txt
+
+playertidy:
+	clang-tidy-9 --header-filter='.h' --extra-arg='-std=c++17' player.cpp > playertidy.txt
+
+randomnumbertidy:
+	clang-tidy-9 --header-filter='.h' --extra-arg='-std=c++17' randomnumbergenerator.cpp > randomnumbertidy.txt
+
+teststidy:
+	clang-tidy-9 --header-filter='.h' --extra-arg='-std=c++17' tests.cpp > teststidy.txt
+
+tidy: maintidy boardtidy playertidy randomnumbertidy teststidy
