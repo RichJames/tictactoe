@@ -1,7 +1,8 @@
 TO DO:
 
-- Have AI avoid making losing moves
 - Clean up player setup & initialization.  Package all this into a separate routine.
+- Change saved games approach to use order of moves (e.g. 13526 - cell 1, then 3, then 5... First one is always X.  Odds are X, evens are O)
+- Have AI avoid making losing moves
 - Add option to play again.
 - run tidy-clang again and fix issues found
 - Run cppcheck against code.

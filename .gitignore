@@ -4,3 +4,6 @@ a.out
 *.o
 tictactoe
 testmysql
+inputtest.cpp
+stringsearchtest.cpp
+main

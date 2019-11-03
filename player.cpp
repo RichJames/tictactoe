@@ -100,8 +100,8 @@ void ComputerPlayer::Move()
   {
     do
     {
+      // See README for lessons learned here
       move = RandomNumberGenerator::getRandomNumber(1, number_of_squares);
-      std::cerr << "Move='" << move << "'" << std::endl;
     } while (!pBoard->mark_move(move, my_mark));
   }
 }

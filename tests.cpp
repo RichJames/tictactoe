@@ -34,7 +34,7 @@ bool test_board(const std::shared_ptr<Board> &pBoard)
       pBoard->mark_move(i++, move);
     }
     std::cout << "Testcase: " << testcase << ' ';
-    auto [game_end, winner_found] = pBoard->check_for_winner();
+    auto [game_end, winner_found, unused] = pBoard->check_for_winner();
     bool test_passed = false;
 
     if (expected_result == 'w' && winner_found && game_end)
