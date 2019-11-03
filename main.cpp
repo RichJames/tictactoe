@@ -37,7 +37,7 @@ bool PlayAgain()
   std::cin >> yn;
   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear remainder of input
 
-  return (yn == 'Y' || yn == 'y') ? true : false;
+  return (yn == 'Y' || yn == 'y');
 }
 
 std::string GetPlayerName(const std::string &prompt)

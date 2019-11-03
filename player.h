@@ -25,7 +25,7 @@ class Player
 public:
   Player() = delete;
 
-  Player(std::string name, Player_Order player_order, std::shared_ptr<Board> pBoard)
+  Player(const std::string &name, Player_Order player_order, const std::shared_ptr<Board> &pBoard)
       : _name(std::move(name)), _player_order(player_order), _board(pBoard) //_board(std::move(pBoard))
   {
   }
@@ -54,7 +54,7 @@ class HumanPlayer : public Player
 {
 public:
   HumanPlayer() = delete;
-  HumanPlayer(std::string name, Player_Order player_order, std::shared_ptr<Board> pBoard)
+  HumanPlayer(const std::string &name, Player_Order player_order, const std::shared_ptr<Board> &pBoard)
       : Player(std::move(name), player_order, pBoard), _prompt(getName() + " - Enter a move: ")
   // : Player(std::move(name), player_order, std::move(pBoard)), _prompt(getName() + " - Enter a move: ")
   {
@@ -85,7 +85,7 @@ class ComputerPlayer : public Player
 {
 public:
   ComputerPlayer() = delete;
-  ComputerPlayer(std::string name, Player_Order player_order, std::shared_ptr<Board> pBoard)
+  ComputerPlayer(const std::string &name, Player_Order player_order, const std::shared_ptr<Board> &pBoard)
       : Player(std::move(name), player_order, pBoard)
   // : Player(std::move(name), player_order, std::move(pBoard))
   {

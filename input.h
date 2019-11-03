@@ -17,9 +17,9 @@ struct input_t
 
   T &getN() { return n; }
 
-  input_t(input_t<T> &&) = default;
+  input_t(input_t<T> &&) noexcept = default;
   input_t &operator=(const input_t<T> &) = default;
-  input_t &operator=(input_t<T> &&) = default;
+  input_t &operator=(input_t<T> &&) noexcept = default;
   ~input_t() = default;
 
   friend std::istream &operator>>(std::istream &ins, const input_t<T> &i)

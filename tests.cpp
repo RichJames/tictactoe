@@ -1,17 +1,17 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 #include "tests.h"
 
-#define TESTFILENAME "tests.dat"
+const std::string testfilename = "tests.dat";
 
-std::vector<std::string> get_test_cases(std::string testfilename)
+std::vector<std::string> get_test_cases(std::string testfile)
 {
   std::vector<std::string> testcases;
   std::ifstream file;
   std::string input;
 
-  file.open(testfilename);
+  file.open(testfile.c_str());
 
   while (std::getline(file, input))
   {
@@ -52,7 +52,7 @@ bool test_board(const std::shared_ptr<Board> &pBoard)
     return test_passed;
   };
 
-  auto testcases = get_test_cases(TESTFILENAME);
+  auto testcases = get_test_cases(testfilename);
 
   bool test_success = true;
   for (auto testcase : testcases)

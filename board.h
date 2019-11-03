@@ -1,13 +1,14 @@
 #ifndef __RICH_PROGRAMMING_CPP_TICTACTOE_BOARD_H
 #define __RICH_PROGRAMMING_CPP_TICTACTOE_BOARD_H
 
+#include "mysql.h"
+
 #include <algorithm>
 #include <iostream>
 #include <iterator>
-#include <tuple>
 #include <set>
 #include <string>
-#include "mysql.h"
+#include <tuple>
 
 // #define TCB_SPAN_NAMESPACE_NAME tcb
 // #include "span.hpp"
@@ -28,6 +29,12 @@ public:
       _getsavedgames();
     }
   }
+
+  Board(const Board &) = default;               // default copy constructor
+  Board(Board &&) noexcept = delete;            // default move constructor
+  Board &operator=(const Board &) = delete;     // default copy assignment operator
+  Board &operator=(Board &&) noexcept = delete; // default move assignment operator
+
   void display();
   bool mark_move(int position, char move);
   std::tuple<bool, bool, char> check_for_winner();
@@ -35,11 +42,14 @@ public:
   void save_board();
   void show_saved_games();
   const std::set<std::string> &get_saved_games() { return _saved_games; }
-  const std::string get_board_state() { return {std::begin(_board), std::end(_board)}; }
+  std::string get_board_state() { return {std::begin(_board), std::end(_board)}; }
 
   ~Board()
   {
-    mysql_close(_conn);
+    if (_conn != NULL)
+    {
+      mysql_close(_conn);
+    }
   }
 
 private:
@@ -50,7 +60,7 @@ private:
   std::array<char, number_of_squares> _board;
   std::set<std::string> _saved_games;
   MYSQL *_conn = NULL;
-  const unsigned int top_lft = 0; // top left
+  const unsigned int top_lft = 0; // top leftgg
   const unsigned int top_mid = 1; // top middle
   const unsigned int top_rgt = 2; // top right
   const unsigned int mid_lft = 3; // middle left

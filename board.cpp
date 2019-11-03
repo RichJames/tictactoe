@@ -155,9 +155,9 @@ MYSQL *Board::_connect_to_db()
 
   if (conn != NULL)
   {
-    const char config_group[] = "tictactoe";
+    std::string config_group = "tictactoe";
 
-    mysql_options(conn, MYSQL_READ_DEFAULT_GROUP, config_group);
+    mysql_options(conn, MYSQL_READ_DEFAULT_GROUP, config_group.c_str());
 
     MYSQL *conn_confirm = mysql_real_connect(conn, NULL, NULL, NULL, "tictactoe", 0, NULL, 0);
 
@@ -189,14 +189,7 @@ bool Board::_isgamesaved(const std::string &search_pattern)
     std::cerr << "Game search failed.  Error: " << res << '\n';
   }
   MYSQL_RES *result = mysql_store_result(_conn);
-  if (mysql_num_rows(result) == 0)
-  {
-    return false;
-  }
-  else
-  {
-    return true;
-  }
+  return (mysql_num_rows(result) != 0);
 }
 
 void Board::_getsavedgames()
