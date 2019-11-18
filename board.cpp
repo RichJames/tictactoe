@@ -164,6 +164,7 @@ MYSQL *Board::_connect_to_db()
     if (conn_confirm != conn)
     {
       std::cerr << "Failed to connect to database.  Error: " << mysql_error(conn) << '\n';
+      conn = NULL;
     }
   }
   return conn;
@@ -180,8 +181,6 @@ bool Board::_isgamesaved(const std::string &search_pattern)
   std::string query = "SELECT game FROM games WHERE (game LIKE '";
   query += search_pattern;
   query += "')";
-
-  // std::cout << "Query is: " << query << '\n';
 
   int res = mysql_query(_conn, query.c_str());
   if (res != 0)
