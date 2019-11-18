@@ -9,3 +9,4 @@ TO DO:
 - Take in command line arguments to flag for tests, normal run, etc.
 - Set up and test interacting with a Postgres database.
 - Add debug and release build switches to makefile
+- Consider if refactoring to use a design pattern is warranted
