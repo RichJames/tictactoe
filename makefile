@@ -25,10 +25,10 @@ tests.o : tests.cpp tests.h
 	${COMPILER}  -c ${DEBUG} -o tests.o tests.cpp -I/opt/lampp/include -std=c++17 
 
 clean:
-	rm testmysql inputtest a.out *.o *tidy.txt *.gz
+	- rm testmysql inputtest a.out *.o *tidy.txt *.gz
 
 realclean:
-	rm testmysql a.out *.o tictactoe
+	- rm testmysql a.out *.o tictactoe
 
 maintidy:
 	clang-tidy-9 --header-filter='.h' --extra-arg='-std=c++17' main.cpp > maintidy.txt
