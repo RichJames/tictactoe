@@ -25,7 +25,7 @@ tests.o : tests.cpp tests.h
 	${COMPILER}  -c ${DEBUG} -o tests.o tests.cpp -I/opt/lampp/include -std=c++17 
 
 clean:
-	rm testmysql inputtest a.out *.o *tidy.txt
+	rm testmysql inputtest a.out *.o *tidy.txt *.gz
 
 realclean:
 	rm testmysql a.out *.o tictactoe
