@@ -6,4 +6,5 @@ tictactoe
 testmysql
 inputtest.cpp
 stringsearchtest.cpp
+mysqlmock.cpp
 main
