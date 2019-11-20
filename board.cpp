@@ -3,16 +3,107 @@
 #include <set>
 #include <string>
 
-void Board::display()
+Board::Board()
 {
-  gsl::span<char> safeboard{_board};
+  reset();
+  _conn = _connect_to_db();
+  if (_conn)
+  {
+    _getsavedgames();
+  }
+}
+
+Board::~Board()
+{
+  if (_conn != NULL)
+  {
+    mysql_close(_conn);
+  }
+}
+
+void Board::display() const
+{
   std::cout << '\n'
-            << ' ' << safeboard[top_lft] << " | " << safeboard[top_mid] << " | " << safeboard[top_rgt] << '\n'
+            << ' ' << _board[Position::top_lft] << " | " << _board[Position::top_mid] << " | " << _board[Position::top_rgt] << '\n'
             << "-----------" << '\n'
-            << ' ' << safeboard[mid_lft] << " | " << safeboard[ctr] << " | " << safeboard[mid_rgt] << '\n'
+            << ' ' << _board[Position::mid_lft] << " | " << _board[Position::ctr] << " | " << _board[Position::mid_rgt] << '\n'
             << "-----------" << '\n'
-            << ' ' << safeboard[bot_lft] << " | " << safeboard[bot_mid] << " | " << safeboard[bot_rgt] << '\n'
+            << ' ' << _board[Position::bot_lft] << " | " << _board[Position::bot_mid] << " | " << _board[Position::bot_rgt] << '\n'
             << std::endl;
+}
+
+std::tuple<bool, bool, char> Board::check_for_winner() const
+{
+  // returns a tuple of two bools and a char.  1st bool is if game ends.  2nd bool is if winner found.
+  // char is the winner's mark ('X' or 'O') or 'D' if a draw.  If no winner, then char is ' '.
+
+  // determince if there is a winner
+  // check rows
+  const int squares_per_row = 3;
+
+  for (int i = 0; i < number_of_squares; i += squares_per_row)
+  {
+    if ((_board[i] == _board[i + 1]) && (_board[i] == _board[i + 2]) && (_board[i] != ' '))
+    {
+      return {true, true, _board[i]};
+    }
+  }
+  // check columns
+  const int number_of_columns = 3;
+  for (int i = 0; i < number_of_columns; ++i)
+  {
+    if ((_board[i] == _board[i + squares_per_row]) && (_board[i] == _board[i + 2 * squares_per_row]) && (_board[i] != ' '))
+    {
+      return {true, true, _board[i]};
+    }
+  }
+  // check diagonals
+  if ((_board[Position::top_lft] == _board[Position::ctr]) && (_board[Position::top_lft] == _board[Position::bot_rgt]) && (_board[Position::top_lft] != ' '))
+  {
+    return {true, true, _board[Position::top_lft]};
+  }
+  if ((_board[Position::top_rgt] == _board[Position::ctr]) && (_board[Position::top_rgt] == _board[Position::bot_lft]) && (_board[Position::top_rgt] != ' '))
+  {
+    return {true, true, _board[Position::top_rgt]};
+  }
+
+  // check for draw
+  for (int i = 0; i < number_of_squares; ++i)
+  {
+    if (_board[i] == ' ') // did we find an unplayed space?
+    {
+      return {false, false, ' '}; // game doesn't end, no winner found
+    }
+  }
+  return {true, false, 'D'}; // game ends, no winner found
+}
+
+void Board::show_saved_games() const
+{
+  // Display games read from database:
+  std::cout << "Games read from database:\n";
+  for (auto game : _saved_games)
+  {
+    std::cout << game << '\n';
+  }
+}
+
+std::string Board::get_board_state() const
+{
+  return {std::begin(_board), std::end(_board)};
+}
+
+const std::set<std::string> &Board::get_saved_games() const
+{
+  return _saved_games;
+}
+
+void Board::reset()
+{
+  for (auto &cell : _board)
+  {
+    cell = ' ';
+  }
 }
 
 bool Board::mark_move(int position, char move)
@@ -24,63 +115,15 @@ bool Board::mark_move(int position, char move)
   if (position > 0 && position <= number_of_squares)
   {
     const unsigned int pos = position - 1; // User position is 1-based, array position is 0-based.
-    gsl::span<char> safeboard{_board};     // enable compiler checking of array bounds
 
     // is move legal?
-    if (safeboard[pos] != 'X' && safeboard[pos] != 'Y')
+    if (_board[pos] != 'X' && _board[pos] != 'Y')
     {
-      safeboard[pos] = move;
+      _board[pos] = move;
       return true;
     }
   }
   return false; // illegal move
-}
-
-std::tuple<bool, bool, char> Board::check_for_winner()
-{
-  // returns a tuple of two bools and a char.  1st bool is if game ends.  2nd bool is if winner found.
-  // char is the winner's mark ('X' or 'O') or 'D' if a draw.  If no winner, then char is ' '.
-  gsl::span<char> safeboard{_board}; // enable compiler checking of array bounds
-
-  // determince if there is a winner
-  // check rows
-  const int squares_per_row = 3;
-
-  for (int i = 0; i < number_of_squares; i += squares_per_row)
-  {
-    if ((safeboard[i] == safeboard[i + 1]) && (safeboard[i] == safeboard[i + 2]) && (safeboard[i] != ' '))
-    {
-      return {true, true, safeboard[i]};
-    }
-  }
-  // check columns
-  const int number_of_columns = 3;
-  for (int i = 0; i < number_of_columns; ++i)
-  {
-    if ((safeboard[i] == safeboard[i + squares_per_row]) && (safeboard[i] == safeboard[i + 2 * squares_per_row]) && (safeboard[i] != ' '))
-    {
-      return {true, true, safeboard[i]};
-    }
-  }
-  // check diagonals
-  if ((safeboard[top_lft] == safeboard[ctr]) && (safeboard[top_lft] == safeboard[bot_rgt]) && (safeboard[top_lft] != ' '))
-  {
-    return {true, true, safeboard[top_lft]};
-  }
-  if ((safeboard[top_rgt] == safeboard[ctr]) && (safeboard[top_rgt] == safeboard[bot_lft]) && (safeboard[top_rgt] != ' '))
-  {
-    return {true, true, safeboard[top_rgt]};
-  }
-
-  // check for draw
-  for (int i = 0; i < number_of_squares; ++i)
-  {
-    if (safeboard[i] == ' ') // did we find an unplayed space?
-    {
-      return {false, false, ' '}; // game doesn't end, no winner found
-    }
-  }
-  return {true, false, 'D'}; // game ends, no winner found
 }
 
 void Board::save_board()
@@ -125,26 +168,6 @@ void Board::save_board()
     // Game is saved in the database now.  Also, put saved game in our saved_games set:
     _saved_games.emplace(game_pattern);
     // show_saved_games();
-  }
-}
-
-void Board::reset()
-{
-  gsl::span<char> safeboard{_board};
-
-  for (auto &cell : safeboard)
-  {
-    cell = ' ';
-  }
-}
-
-void Board::show_saved_games()
-{
-  // Display games read from database:
-  std::cout << "Games read from database:\n";
-  for (auto game : _saved_games)
-  {
-    std::cout << game << '\n';
   }
 }
 
