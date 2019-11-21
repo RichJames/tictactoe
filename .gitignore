@@ -10,4 +10,4 @@ mysqlmock.cpp
 main
 WORKSPACE
 BUILD
-testapp
+testit
