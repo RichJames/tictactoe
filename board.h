@@ -29,6 +29,7 @@ public:
   void show_saved_games() const;
   std::string get_board_state() const;
   const std::set<std::string> &get_saved_games() const;
+  bool database_connected() const;
 
   void reset();
   bool mark_move(int position, char move);

@@ -1,8 +1,5 @@
 #include "board.h"
 
-#include <set>
-#include <string>
-
 Board::Board()
 {
   reset();
@@ -96,6 +93,11 @@ std::string Board::get_board_state() const
 const std::set<std::string> &Board::get_saved_games() const
 {
   return _saved_games;
+}
+
+bool Board::database_connected() const
+{
+  return _conn == NULL ? false : true;
 }
 
 void Board::reset()

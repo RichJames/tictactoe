@@ -8,3 +8,6 @@ inputtest.cpp
 stringsearchtest.cpp
 mysqlmock.cpp
 main
+WORKSPACE
+BUILD
+testapp

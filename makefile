@@ -1,7 +1,11 @@
 #LDFLAGS="-L/opt/lampp/lib"
+PROJ_DIR=.
 COMPILER="clang++-9"
 #COMPILER="g++"
 DEBUG=-g
+CFLAGS=-iquote$(PROJ_DIR)
+GTEST_CFLAGS=`pkg-config --cflags gtest_main`
+GTEST_LIBS=`pkg-config --libs gtest_main`
 
 testmysql: 
 	${COMPILER} mysql.cpp -I/opt/lampp/include ${LDFLAGS} -lmysqlclient -Wl,--enable-new-dtags,-rpath,/opt/lampp/lib -o testmysql
@@ -27,11 +31,18 @@ player.o : player.cpp player.h input.h
 tests.o : tests.cpp tests.h
 	${COMPILER}  -c ${DEBUG} -o tests.o tests.cpp -I/opt/lampp/include -std=c++17 
 
+testapp.o : tests/board_unittests.cpp 
+	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
+
+testapp : testapp.o board.o
+	${COMPILER} ${CXXFLAGS} ${LDFLAGS} $^ -o $@ ${GTEST_LIBS} -lmysqlclient
+	mv testapp tests/
+
 clean:
 	- rm testmysql inputtest a.out *.o *tidy.txt *.gz
 
 realclean:
-	- rm testmysql a.out *.o tictactoe
+	- rm testmysql a.out *.o tictactoe tests/testapp
 
 maintidy:
 	clang-tidy-9 --header-filter='.h' --extra-arg='-std=c++17' main.cpp > maintidy.txt
