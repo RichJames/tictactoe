@@ -1,13 +1,13 @@
 #LDFLAGS="-L/opt/lampp/lib"
 COMPILER="clang++-9"
 #COMPILER="g++"
-#DEBUG=-g
+DEBUG=-g
 
 testmysql: 
 	${COMPILER} mysql.cpp -I/opt/lampp/include ${LDFLAGS} -lmysqlclient -Wl,--enable-new-dtags,-rpath,/opt/lampp/lib -o testmysql
 
 tictactoe: main.o play_game.o randomnumbergenerator.o board.o player.o tests.o
-	${COMPILER}  -o tictactoe main.o play_game.o randomnumbergenerator.o board.o player.o tests.o ${LDFLAGS} -lmysqlclient
+	${COMPILER}  ${DEBUG} -o tictactoe main.o play_game.o randomnumbergenerator.o board.o player.o tests.o ${LDFLAGS} -lmysqlclient
 
 main.o : main.cpp play_game.h
 	${COMPILER}  -c ${DEBUG} -o main.o main.cpp -I/opt/lampp/include -std=c++17

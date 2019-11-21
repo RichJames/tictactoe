@@ -16,12 +16,13 @@ using pPlayer = std::shared_ptr<Player>;
 // #define TEST_WINNER_DETECTION
 // #define PRINT_PLAYER_INFO
 
-Player_Type ChoosePlayer(const std::string &prompt)
+// instream parameter added to aid with automated testing
+Player_Type ChoosePlayer(const std::string &prompt, std::istream &instream = std::cin)
 {
   int player = -1;
   while (true)
   {
-    player = getinput<int>(prompt);
+    player = getinput<int>(prompt, instream);
     if (player == 1 || player == 2)
     {
       break;
@@ -31,23 +32,24 @@ Player_Type ChoosePlayer(const std::string &prompt)
   return player == 1 ? Player_Type::human : Player_Type::computer;
 }
 
-bool PlayAgain()
+bool PlayAgain(std::istream &instream = std::cin)
 {
   char yn;
 
   std::cout << "Play again? (Y/N)";
-  std::cin >> yn;
-  std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear remainder of input
+  instream >> yn;
+  instream.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear remainder of input
 
   return (yn == 'Y' || yn == 'y');
 }
 
-std::string GetPlayerName(const std::string &prompt)
+// instream parameter added to aid with automated testing
+std::string GetPlayerName(const std::string &prompt, std::istream &instream = std::cin)
 {
   std::string playername;
   while (true)
   {
-    playername = getinput<std::string>(prompt);
+    playername = getinput<std::string>(prompt, instream);
     if (!playername.empty())
     {
       break;
@@ -72,13 +74,13 @@ pPlayer assignPlayer(const std::string &playername, Player_Type player_type, Pla
   return player;
 }
 
-std::tuple<pPlayer, pPlayer> SetupPlayers(const std::shared_ptr<Board> &ptrBoard)
+std::tuple<pPlayer, pPlayer> SetupPlayers(const std::shared_ptr<Board> &ptrBoard, std::istream &instream = std::cin)
 {
   Player_Type first_player_type = ChoosePlayer("Who will be player 1 (1=human, 2=computer)? ");
   std::string firstplayername;
   if (first_player_type == Player_Type::human)
   {
-    firstplayername = GetPlayerName("Enter player 1's name: ");
+    firstplayername = GetPlayerName("Enter player 1's name: ", instream);
   }
   else
   {
@@ -89,7 +91,7 @@ std::tuple<pPlayer, pPlayer> SetupPlayers(const std::shared_ptr<Board> &ptrBoard
   std::string secondplayername;
   if (second_player_type == Player_Type::human)
   {
-    secondplayername = GetPlayerName("Enter player 2's name: ");
+    secondplayername = GetPlayerName("Enter player 2's name: ", instream);
   }
   else
   {
@@ -106,7 +108,7 @@ std::tuple<pPlayer, pPlayer> SetupPlayers(const std::shared_ptr<Board> &ptrBoard
   return {player1, player2};
 }
 
-void play_game()
+void play_game(std::istream &instream)
 {
   // Create the board:
   std::shared_ptr<Board> ptrBoard = std::make_shared<Board>();
@@ -144,7 +146,7 @@ void play_game()
 #endif // NORMAL_RUN
 #if defined(NORMAL_RUN) || defined(PRINT_PLAYER_INFO)
     // Define who the players are and their names:
-    auto [player1, player2] = SetupPlayers(ptrBoard);
+    auto [player1, player2] = SetupPlayers(ptrBoard, instream);
 #endif
 #ifdef NORMAL_RUN
     // Player1 plays first.  currentPlayer will alternately point to player1 and player2, depending on who's turn it is.
@@ -157,7 +159,8 @@ void play_game()
     while (true) // play until the game ends (winner or draw)
     {
       // Make a move and show the updated board:
-      currentPlayer->Move();
+
+      currentPlayer->Move(instream);
       ptrBoard->display();
 
       // Check if the game ended and report the result if so:
@@ -180,7 +183,7 @@ void play_game()
     // Post game cleanup - save the board to the database.
     ptrBoard->save_board();
 
-    bContinuePlaying = PlayAgain();
+    bContinuePlaying = PlayAgain(instream);
 
   } while (bContinuePlaying);
 

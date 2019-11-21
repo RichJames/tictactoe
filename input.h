@@ -81,20 +81,25 @@ input(T &n)
 // }
 //----------------------------------------------------------------------------
 template <typename T>
-T getinput(const std::string &prompt)
+// T getinput(const std::string &prompt)
+T getinput(const std::string &prompt, std::istream &instream)
 {
   T n;
 
   std::cout << prompt << '\n'
             << std::flush;
-  std::cin >> input(n);
+  // std::cin >> input(n);
+  instream >> input(n);
 
-  while (!std::cin)
+  // while (!std::cin)
+  while (!instream)
   {
-    std::cin.clear();
+    // std::cin.clear();
+    instream.clear();
     std::cout << prompt << '\n'
               << std::flush;
-    std::cin >> input(n);
+    // std::cin >> input(n);
+    instream >> input(n);
   }
 
   return n;

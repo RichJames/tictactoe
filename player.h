@@ -31,7 +31,7 @@ public:
   {
   }
 
-  virtual void Move() = 0;
+  virtual void Move(std::istream &instream = std::cin) = 0;
 
   virtual void Info() const;
   const std::string &getName() const;
@@ -53,7 +53,7 @@ public:
   {
   }
 
-  void Move() override;
+  void Move(std::istream &instream = std::cin) override;
   void Info() const override;
 
 private:
@@ -68,7 +68,7 @@ public:
       : Player(std::move(name), player_order, pBoard)
   {
   }
-  void Move() override;
+  void Move(std::istream &instream = std::cin) override;
 
 private:
 };

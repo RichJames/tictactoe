@@ -31,18 +31,19 @@ void HumanPlayer::Info() const
   std::cout << "My prompt is: " << _prompt << std::endl;
 }
 
-void HumanPlayer::Move()
+void HumanPlayer::Move(std::istream &instream)
 {
   int move = -1;
   char mark = isFirst() ? 'X' : 'O';
   std::shared_ptr<Board> pBoard = getBoard();
+
   do
   {
-    move = getinput<int>(_prompt);
+    move = getinput<int>(_prompt, instream);
   } while (!pBoard->mark_move(move, mark));
 }
 
-void ComputerPlayer::Move()
+void ComputerPlayer::Move(std::istream &unused)
 {
   std::shared_ptr<Board> pBoard = getBoard();
   const std::string board = pBoard->get_board_state();
