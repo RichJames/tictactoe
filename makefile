@@ -34,15 +34,16 @@ tests.o : tests.cpp tests.h
 testapp.o : tests/board_unittests.cpp 
 	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
-testapp : testapp.o board.o
+test : testapp.o board.o
 	${COMPILER} ${CXXFLAGS} ${LDFLAGS} $^ -o $@ ${GTEST_LIBS} -lmysqlclient
-	mv testapp tests/
+	mv $@ tests/
+	tests/$@
 
 clean:
 	- rm testmysql inputtest a.out *.o *tidy.txt *.gz
 
 realclean:
-	- rm testmysql a.out *.o tictactoe tests/testapp
+	- rm testmysql a.out *.o tictactoe tests/test
 
 maintidy:
 	clang-tidy-9 --header-filter='.h' --extra-arg='-std=c++17' main.cpp > maintidy.txt
