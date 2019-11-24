@@ -1,14 +1,7 @@
+#include <memory>
 #include "player.h"
 
 constexpr unsigned int invalid_move = 10;
-
-void Player::Info() const
-{
-  std::cout << "My name is: " << _name << '\n';
-  std::string player_order = isFirst() ? "first" : "second";
-  std::cout << "I am the " << player_order << " player\n";
-  std::cout << std::flush;
-}
 
 const std::string &Player::getName() const
 {
@@ -25,13 +18,13 @@ std::shared_ptr<Board> Player::getBoard() const
   return _board;
 }
 
-void HumanPlayer::Info() const
+const std::string HumanPlayer::get_prompt() const
 {
-  Player::Info();
-  std::cout << "My prompt is: " << _prompt << std::endl;
+  return _prompt;
 }
 
-void HumanPlayer::Move(std::istream &instream)
+// void HumanPlayer::Move(std::istream &instream)
+void HumanPlayer::Move(InputInterface<int> &input_interface)
 {
   int move = -1;
   char mark = isFirst() ? 'X' : 'O';
@@ -39,11 +32,11 @@ void HumanPlayer::Move(std::istream &instream)
 
   do
   {
-    move = getinput<int>(_prompt, instream);
+    move = input_interface.getinput(_prompt);
   } while (!pBoard->mark_move(move, mark));
 }
 
-void ComputerPlayer::Move(std::istream &unused)
+void ComputerPlayer::Move(InputInterface<int> &unused)
 {
   std::shared_ptr<Board> pBoard = getBoard();
   const std::string board = pBoard->get_board_state();

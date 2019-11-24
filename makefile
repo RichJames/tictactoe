@@ -6,6 +6,7 @@ DEBUG=-g
 CFLAGS=-iquote$(PROJ_DIR)
 GTEST_CFLAGS=`pkg-config --cflags gtest_main`
 GTEST_LIBS=`pkg-config --libs gtest_main`
+GMOCK_LIBS=`pkg-config --libs gmock`
 
 testmysql: 
 	${COMPILER} mysql.cpp -I/opt/lampp/include ${LDFLAGS} -lmysqlclient -Wl,--enable-new-dtags,-rpath,/opt/lampp/lib -o testmysql
@@ -13,7 +14,7 @@ testmysql:
 tictactoe: main.o play_game.o randomnumbergenerator.o board.o player.o tests.o
 	${COMPILER}  ${DEBUG} -o tictactoe main.o play_game.o randomnumbergenerator.o board.o player.o tests.o ${LDFLAGS} -lmysqlclient
 
-main.o : main.cpp play_game.h
+main.o : main.cpp play_game.h input.h
 	${COMPILER}  -c ${DEBUG} -o main.o main.cpp -I/opt/lampp/include -std=c++17
 	
 play_game.o : play_game.cpp play_game.h
@@ -31,11 +32,14 @@ player.o : player.cpp player.h input.h
 tests.o : tests.cpp tests.h
 	${COMPILER}  -c ${DEBUG} -o tests.o tests.cpp -I/opt/lampp/include -std=c++17 
 
-testapp.o : tests/board_unittests.cpp 
+boardtests.o : tests/board_unittests.cpp 
 	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
-testit : testapp.o board.o
-	${COMPILER} ${CXXFLAGS} ${LDFLAGS} $^ -o $@ ${GTEST_LIBS} -lmysqlclient
+playertests.o : tests/player_unittests.cpp 
+	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
+
+testit : boardtests.o playertests.o player.o board.o randomnumbergenerator.o
+	${COMPILER} ${CXXFLAGS} ${LDFLAGS} $^ -v -o $@ ${GTEST_LIBS} ${GMOCK_LIBS} -lmysqlclient
 	mv $@ tests/
 	tests/$@
 

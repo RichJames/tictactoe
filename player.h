@@ -31,12 +31,11 @@ public:
   {
   }
 
-  virtual void Move(std::istream &instream = std::cin) = 0;
+  virtual void Move(InputInterface<int> &) = 0;
 
-  virtual void Info() const;
-  const std::string &getName() const;
-  bool isFirst() const;
-  std::shared_ptr<Board> getBoard() const;
+  virtual const std::string &getName() const;
+  virtual bool isFirst() const;
+  virtual std::shared_ptr<Board> getBoard() const;
 
 private:
   std::string _name;
@@ -53,8 +52,8 @@ public:
   {
   }
 
-  void Move(std::istream &instream = std::cin) override;
-  void Info() const override;
+  void Move(InputInterface<int> &) override;
+  const std::string get_prompt() const;
 
 private:
   std::string _prompt;
@@ -68,7 +67,7 @@ public:
       : Player(std::move(name), player_order, pBoard)
   {
   }
-  void Move(std::istream &instream = std::cin) override;
+  void Move(InputInterface<int> &) override;
 
 private:
 };
