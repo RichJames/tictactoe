@@ -1,18 +1,23 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 
 #include "play_game.h"
+#include "input.h"
 // #include "tests.h"
 
 // instream parameter added to aid with automated testing
-Player_Type ChoosePlayer(const std::string &prompt, std::istream &instream)
+Player_Type ChoosePlayer(const std::string &prompt)
 {
+  auto io = IO::get_instance();
+
   int player = -1;
   while (true)
   {
-    player = getinput<int>(prompt, instream);
-    // player = input_interface.getinput(prompt);
+    io->output(prompt);
+    player = io->get_input<int>();
+
     if (player == 1 || player == 2)
     {
       break;
@@ -22,27 +27,28 @@ Player_Type ChoosePlayer(const std::string &prompt, std::istream &instream)
   return player == 1 ? Player_Type::human : Player_Type::computer;
 }
 
-bool PlayAgain(std::istream &instream)
-// bool PlayAgain(InputInterface<int> &input_interface)
+bool PlayAgain()
 {
-  char yn; // = input_interface.getinput("Play again? (Y/N)");
+  auto io = IO::get_instance();
 
-  std::cout << "Play again? (Y/N)";
+  io->output("Play again? (Y/N)");
 
-  instream >> yn;
-  instream.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear remainder of input
-  // input_interface.clear();
+  char yn = io->get_input<char>();
+  io->clear_input<char>();
 
   return (yn == 'Y' || yn == 'y');
 }
 
 // instream parameter added to aid with automated testing
-std::string GetPlayerName(const std::string &prompt, std::istream &instream)
+std::string GetPlayerName(const std::string &prompt)
 {
+  auto io = IO::get_instance();
+
   std::string playername;
   while (true)
   {
-    playername = getinput<std::string>(prompt, instream);
+    io->output(prompt);
+    playername = io->get_input<std::string>();
     if (!playername.empty())
     {
       break;
@@ -67,14 +73,13 @@ pPlayer assignPlayer(const std::string &playername, Player_Type player_type, Pla
   return player;
 }
 
-// std::tuple<pPlayer, pPlayer> SetupPlayers(const std::shared_ptr<Board> &ptrBoard, InputInterface<char> &instream)
-std::tuple<pPlayer, pPlayer> SetupPlayers(const std::shared_ptr<Board> &ptrBoard, std::istream &instream)
+std::tuple<pPlayer, pPlayer> SetupPlayers(const std::shared_ptr<Board> &ptrBoard)
 {
   Player_Type first_player_type = ChoosePlayer("Who will be player 1 (1=human, 2=computer)? ");
   std::string firstplayername;
   if (first_player_type == Player_Type::human)
   {
-    firstplayername = GetPlayerName("Enter player 1's name: ", instream);
+    firstplayername = GetPlayerName("Enter player 1's name: ");
   }
   else
   {
@@ -85,7 +90,7 @@ std::tuple<pPlayer, pPlayer> SetupPlayers(const std::shared_ptr<Board> &ptrBoard
   std::string secondplayername;
   if (second_player_type == Player_Type::human)
   {
-    secondplayername = GetPlayerName("Enter player 2's name: ", instream);
+    secondplayername = GetPlayerName("Enter player 2's name: ");
   }
   else
   {
@@ -97,13 +102,13 @@ std::tuple<pPlayer, pPlayer> SetupPlayers(const std::shared_ptr<Board> &ptrBoard
   return {player1, player2};
 }
 
-void play_game(std::istream &instream)
+void play_game()
 {
   // Create the board:
   std::shared_ptr<Board> ptrBoard = std::make_shared<Board>();
 
   // Create an input interface objects:
-  GetStdIn<int> instream_int;
+  // GetStdIn<int> instream_int;
   // GetStdIn<char> instream_char;
 
   // Create unit test for this code
@@ -116,8 +121,11 @@ void play_game(std::istream &instream)
   //   std::cout << "!!!!!!! At least one test failed !!!!!!!\n";
   // }
 
-  std::cout << "Welcome to Tic Tac Toe!" << std::endl
-            << std::endl;
+  std::ostringstream welcome;
+  welcome << "Welcome to Tic Tac Toe!" << std::endl
+          << std::endl;
+  auto io = IO::get_instance();
+  io->output(welcome.str());
 
   // Play games until the user quits
   bool bContinuePlaying = true;
@@ -127,8 +135,7 @@ void play_game(std::istream &instream)
     ptrBoard->reset();
 
     // Define who the players are and their names:
-    // auto [player1, player2] = SetupPlayers(ptrBoard, instream_char);
-    auto [player1, player2] = SetupPlayers(ptrBoard, instream);
+    auto [player1, player2] = SetupPlayers(ptrBoard);
 
     // Player1 plays first.  currentPlayer will alternately point to player1 and player2, depending on who's turn it is.
     pPlayer currentPlayer = player1;
@@ -140,21 +147,23 @@ void play_game(std::istream &instream)
     while (true) // play until the game ends (winner or draw)
     {
       // Make a move and show the updated board:
-
-      currentPlayer->Move(instream_int);
-      // currentPlayer->Move(instream);
+      currentPlayer->Move();
       ptrBoard->display();
 
       // Check if the game ended and report the result if so:
       auto [game_end, winner_found, not_used] = ptrBoard->check_for_winner();
       if (game_end && winner_found)
       {
-        std::cout << "Game ends.  " << currentPlayer->getName() << " wins!\n";
+        std::ostringstream message;
+        message << "Game ends.  " << currentPlayer->getName() << " wins!\n";
+        io->output(message.str());
         break;
       }
       if (game_end && !winner_found)
       {
-        std::cout << "Game ends.  We have a draw.\n";
+        std::ostringstream message;
+        message << "Game ends.  We have a draw.\n";
+        io->output(message.str());
         break;
       }
 
@@ -166,10 +175,10 @@ void play_game(std::istream &instream)
     ptrBoard->save_board();
 
     // bContinuePlaying = PlayAgain(instream_char);
-    bContinuePlaying = PlayAgain(instream);
+    bContinuePlaying = PlayAgain();
 
   } while (bContinuePlaying);
 
   // Just to be safe, ensure all output is flushed and displayed.
-  std::cout << std::flush;
+  io->flush_output<char>();
 }

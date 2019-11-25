@@ -31,7 +31,7 @@ public:
   {
   }
 
-  virtual void Move(InputInterface<int> &) = 0;
+  virtual void Move() = 0;
 
   virtual const std::string &getName() const;
   virtual bool isFirst() const;
@@ -52,7 +52,7 @@ public:
   {
   }
 
-  void Move(InputInterface<int> &) override;
+  void Move() override;
   const std::string get_prompt() const;
 
 private:
@@ -67,7 +67,7 @@ public:
       : Player(std::move(name), player_order, pBoard)
   {
   }
-  void Move(InputInterface<int> &) override;
+  void Move() override;
 
 private:
 };

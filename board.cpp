@@ -1,4 +1,6 @@
 #include "board.h"
+#include "input.h"
+#include <sstream>
 
 Board::Board()
 {
@@ -20,13 +22,18 @@ Board::~Board()
 
 void Board::display() const
 {
-  std::cout << '\n'
+  std::ostringstream outstream;
+
+  outstream << '\n'
             << ' ' << _board[Position::top_lft] << " | " << _board[Position::top_mid] << " | " << _board[Position::top_rgt] << '\n'
             << "-----------" << '\n'
             << ' ' << _board[Position::mid_lft] << " | " << _board[Position::ctr] << " | " << _board[Position::mid_rgt] << '\n'
             << "-----------" << '\n'
             << ' ' << _board[Position::bot_lft] << " | " << _board[Position::bot_mid] << " | " << _board[Position::bot_rgt] << '\n'
             << std::endl;
+
+  auto io = IO::get_instance();
+  io->output(outstream.str());
 }
 
 std::tuple<bool, bool, char> Board::check_for_winner() const
@@ -78,10 +85,15 @@ std::tuple<bool, bool, char> Board::check_for_winner() const
 void Board::show_saved_games() const
 {
   // Display games read from database:
-  std::cout << "Games read from database:\n";
+  auto io = IO::get_instance();
+  io->output("Games read from database:\n");
+
+  // std::cout << "Games read from database:\n";
   for (auto game : _saved_games)
   {
-    std::cout << game << '\n';
+    io->output(game);
+    io->output('\n');
+    // std::cout << game << '\n';
   }
 }
 
@@ -136,11 +148,15 @@ void Board::save_board()
     return;
   }
 
+  // Get i/o interface:
+  auto io = IO::get_instance();
+
   // Check if game ended.  Only save games that have ended.
   auto [game_end, ignore2, winning_mark] = check_for_winner();
   if (!game_end)
   {
-    std::cerr << "Error saving game -- game has not ended!\n";
+    io->err_output("Error saving game -- game has not ended!\n");
+    // std::cerr << "Error saving game -- game has not ended!\n";
     return;
   }
   // Convert _board into a string
@@ -163,7 +179,10 @@ void Board::save_board()
   int result = mysql_query(_conn, query.c_str());
   if (result != 0)
   {
-    std::cerr << "Game save failed.  Error: " << result << '\n';
+    std::ostringstream outstream;
+    outstream << "Game save failed.  Error: " << result << '\n';
+    io->err_output(outstream.str());
+    // std::cerr << "Game save failed.  Error: " << result << '\n';
   }
   else
   {
@@ -188,7 +207,11 @@ MYSQL *Board::_connect_to_db()
 
     if (conn_confirm != conn)
     {
-      std::cerr << "Failed to connect to database.  Error: " << mysql_error(conn) << '\n';
+      std::ostringstream outstream;
+      outstream << "Failed to connect to database.  Error: " << mysql_error(conn) << '\n';
+      auto io = IO::get_instance();
+      io->err_output(outstream.str());
+      // std::cerr << "Failed to connect to database.  Error: " << mysql_error(conn) << '\n';
       conn = NULL;
     }
   }
@@ -210,7 +233,11 @@ bool Board::_isgamesaved(const std::string &search_pattern)
   int res = mysql_query(_conn, query.c_str());
   if (res != 0)
   {
-    std::cerr << "Game search failed.  Error: " << res << '\n';
+    std::ostringstream outstream;
+    outstream << "Game search failed.  Error: " << res << '\n';
+    auto io = IO::get_instance();
+    io->err_output(outstream.str());
+    // std::cerr << "Game search failed.  Error: " << res << '\n';
   }
   MYSQL_RES *result = mysql_store_result(_conn);
   return (mysql_num_rows(result) != 0);
@@ -229,7 +256,11 @@ void Board::_getsavedgames()
   int res = mysql_query(_conn, query.c_str());
   if (res != 0)
   {
-    std::cerr << "Query for saved games failed.  Error: " << res << '\n';
+    std::ostringstream outstream;
+    outstream << "Query for saved games failed.  Error: " << res << '\n';
+    auto io = IO::get_instance();
+    io->err_output(outstream.str());
+    // std::cerr << "Query for saved games failed.  Error: " << res << '\n';
     return;
   }
 
@@ -243,7 +274,11 @@ void Board::_getsavedgames()
   unsigned int num_fields = mysql_num_fields(result);
   if (num_fields > 1)
   {
-    std::cerr << "Unexpectedly got more than 1 field from the database\n";
+    std::ostringstream outstream;
+    outstream << "Unexpectedly got more than 1 field from the database\n";
+    auto io = IO::get_instance();
+    io->err_output(outstream.str());
+    // std::cerr << "Unexpectedly got more than 1 field from the database\n";
     return;
   }
 

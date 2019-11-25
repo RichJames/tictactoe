@@ -24,19 +24,21 @@ const std::string HumanPlayer::get_prompt() const
 }
 
 // void HumanPlayer::Move(std::istream &instream)
-void HumanPlayer::Move(InputInterface<int> &input_interface)
+void HumanPlayer::Move()
 {
   int move = -1;
   char mark = isFirst() ? 'X' : 'O';
   std::shared_ptr<Board> pBoard = getBoard();
 
+  auto io = IO::get_instance();
   do
   {
-    move = input_interface.getinput(_prompt);
+    io->output(_prompt);
+    move = io->get_input<int>();
   } while (!pBoard->mark_move(move, mark));
 }
 
-void ComputerPlayer::Move(InputInterface<int> &unused)
+void ComputerPlayer::Move()
 {
   std::shared_ptr<Board> pBoard = getBoard();
   const std::string board = pBoard->get_board_state();
