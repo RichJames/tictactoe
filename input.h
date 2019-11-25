@@ -4,6 +4,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <limits>
+#include <cctype>
 
 //----------------------------------------------------------------------------
 template <typename T>
@@ -37,8 +39,9 @@ struct input_t
     ss >> i.n;
 
     // Check to see that there is nothing left over
-    if (!ss.eof())
+    if (ss.tellg() != -1)
     {
+      std::cout << "ss.peek() = >" << ss.peek() << "<\n";
       ins.setstate(std::ios::failbit);
     }
 
@@ -55,6 +58,7 @@ input(T &n)
   return result;
 }
 
+//----------------------------------------------------------------------------
 template <typename T>
 // T getinput(const std::string &prompt)
 T getinput(const std::string &prompt, std::istream &instream)
@@ -80,6 +84,7 @@ T getinput(const std::string &prompt, std::istream &instream)
   return n;
 }
 
+//----------------------------------------------------------------------------
 template <typename T>
 class InputInterface
 {
@@ -89,6 +94,7 @@ public:
   virtual ~InputInterface() = default;
 };
 
+//----------------------------------------------------------------------------
 template <typename T>
 class GetStdIn : public InputInterface<T>
 {
@@ -147,10 +153,10 @@ private:
 
       // Read it into the target type
       std::istringstream ss(s);
-      // T &n = i.getN();
+
       ss >> i.n;
 
-      // Check to see that there is nothing left over
+      // Check to see that there is nothing left over - doesn't work when needing a single char as input
       if (!ss.eof())
       {
         ins.setstate(std::ios::failbit);
@@ -168,5 +174,76 @@ private:
     return result;
   }
 };
+
+//----------------------------------------------------------------------------
+// Specialization of GetStdIn for single char input
+template <>
+class GetStdIn<char> : public InputInterface<char>
+{
+public:
+  char getinput(const std::string &prompt) override
+  {
+    std::string s;
+    while (true)
+    {
+      std::cout << prompt << '\n'
+                << std::flush;
+      // std::cin >> n;
+
+      getline(std::cin, s);
+
+      // Get rid of any trailing whitespace
+      s.erase(s.find_last_not_of(" \f\n\r\t\v") + 1);
+
+      if (s.size() == 1)
+      {
+        if (std::isalpha(s[0])) // is alpha
+        {
+          break;
+        }
+      }
+    }
+
+    return s[0];
+  }
+
+  void clear() override
+  {
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear remainder of input
+  }
+
+  virtual ~GetStdIn() = default;
+};
+
+//----------------------------------------------------------------------------
+// IO class is intended to be an abstraction of i/o methods.  Program
+// logic will use this to get input and send output.  The details of how
+// that is done is handled by this class.
+// In time, this will likely be refactored to be more flexible by allowing
+// multiple i/o implementations.
+class IO // : public IOinterface
+{
+public:
+  IO() = default;
+
+  template <typename T>
+  T get_input();
+
+  template <typename T>
+  void output(T t);
+};
+
+template <typename T>
+T IO::get_input()
+{
+  GetStdIn<T> t_in;
+  return t_in.getinput("");
+}
+
+template <typename T>
+void IO::output(T t)
+{
+  std::cout << t;
+}
 
 #endif // __RICH_PROGRAMMING_CPP_TICTACTOE_INPUT_H
