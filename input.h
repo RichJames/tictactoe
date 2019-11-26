@@ -13,7 +13,7 @@ template <typename T>
 class InputInterface
 {
 public:
-  virtual T getinput(const std::string &prompt) = 0;
+  virtual T getinput() = 0;
   virtual void clear() = 0;
   virtual void flush_output() = 0;
   virtual ~InputInterface() = default;
@@ -24,19 +24,19 @@ template <typename T>
 class GetStdIn : public InputInterface<T>
 {
 public:
-  T getinput(const std::string &prompt) override
+  T getinput() override
   {
     T n;
 
-    std::cout << prompt << '\n'
-              << std::flush;
+    // std::cout << prompt << '\n'
+    //           << std::flush;
     std::cin >> input(n);
 
     while (!std::cin)
     {
       std::cin.clear();
-      std::cout << prompt << '\n'
-                << std::flush;
+      // std::cout << prompt << '\n'
+      //           << std::flush;
       std::cin >> input(n);
     }
 
@@ -111,13 +111,13 @@ template <>
 class GetStdIn<char> : public InputInterface<char>
 {
 public:
-  char getinput(const std::string &prompt) override
+  char getinput() override
   {
     std::string s;
     while (true)
     {
-      std::cout << prompt << '\n'
-                << std::flush;
+      // std::cout << prompt << '\n'
+      //           << std::flush;
       // std::cin >> n;
 
       getline(std::cin, s);
@@ -202,7 +202,7 @@ template <typename T>
 T IO::get_input()
 {
   GetStdIn<T> t_in;
-  return t_in.getinput("");
+  return t_in.getinput();
 }
 
 template <typename T>
