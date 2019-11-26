@@ -11,3 +11,6 @@ main
 WORKSPACE
 BUILD
 testit
+testinput*
+testconcat*
+io.cpp
