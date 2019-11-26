@@ -88,12 +88,10 @@ void Board::show_saved_games() const
   auto io = IO::get_instance();
   io->output("Games read from database:\n");
 
-  // std::cout << "Games read from database:\n";
   for (auto game : _saved_games)
   {
     io->output(game);
     io->output('\n');
-    // std::cout << game << '\n';
   }
 }
 

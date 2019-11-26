@@ -41,7 +41,7 @@ playertests.o : tests/player_unittests.cpp
 inputtests.o : tests/input_unittests.cpp 
 	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
-testit : boardtests.o playertests.o inputtests.o player.o board.o randomnumbergenerator.o
+testit : inputtests.o boardtests.o playertests.o player.o board.o randomnumbergenerator.o
 	${COMPILER} ${CXXFLAGS} ${LDFLAGS} $^ -v -o $@ ${GTEST_LIBS} ${GMOCK_LIBS} -lmysqlclient
 	mv $@ tests/
 	tests/$@
