@@ -15,7 +15,7 @@ class InputInterface
 public:
   virtual T getinput() = 0;
   virtual void clear() = 0;
-  virtual void flush_output() = 0;
+  // virtual void flush_output() = 0;
   virtual ~InputInterface() = default;
 };
 
@@ -48,10 +48,10 @@ public:
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear remainder of input
   }
 
-  void flush_output() override
-  {
-    std::cout << std::flush;
-  }
+  // void flush_output() override
+  // {
+  //   std::cout << std::flush;
+  // }
 
   virtual ~GetStdIn() = default;
 
@@ -142,10 +142,10 @@ public:
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear remainder of input
   }
 
-  void flush_output() override
-  {
-    std::cout << std::flush;
-  }
+  // void flush_output() override
+  // {
+  //   std::cout << std::flush;
+  // }
   virtual ~GetStdIn() = default;
 };
 
@@ -191,8 +191,8 @@ public:
   template <typename T>
   void clear_input();
 
-  template <typename T>
-  void flush_output();
+  // template <typename T>
+  // void flush_output();
 
 private:
   IO() = default;
@@ -220,14 +220,14 @@ void IO::err_output(T t)
 template <typename T>
 void IO::clear_input()
 {
-  GetStdIn<char> c_in;
+  GetStdIn<T> c_in;
   c_in.clear();
 }
 
-template <typename T>
-void IO::flush_output()
-{
-  GetStdIn<char> c_in;
-  c_in.flush_output();
-}
+// template <typename T>
+// void IO::flush_output()
+// {
+//   GetStdIn<T> c_in;
+//   c_in.flush_output();
+// }
 #endif // __RICH_PROGRAMMING_CPP_TICTACTOE_INPUT_H
