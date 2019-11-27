@@ -180,5 +180,5 @@ void play_game()
   } while (bContinuePlaying);
 
   // Just to be safe, ensure all output is flushed and displayed.
-  io->flush_output<char>();
+  // io->flush_output<char>();
 }

@@ -130,15 +130,60 @@ TEST(BoardTest, Save_Board_NoDB)
 //  check_for_winner()
 TEST(BoardTest, Check_For_Winner)
 {
+	Board b;
 	// Test for incomplete game
+	{
+		auto [game_end, winner_found, winner] = b.check_for_winner();
+		EXPECT_FALSE(game_end);
+		EXPECT_FALSE(winner_found);
+		EXPECT_EQ(' ', winner);
+	}
+
+	// Test winning situations
+	auto test_winner = [&](int pos1, int pos2, int pos3) {
+		b.reset();
+		b.mark_move(pos1, 'X');
+		b.mark_move(pos2, 'X');
+		b.mark_move(pos3, 'X');
+		auto [game_end, winner_found, winner] = b.check_for_winner();
+		EXPECT_TRUE(game_end);
+		EXPECT_TRUE(winner_found);
+		EXPECT_EQ('X', winner);
+	};
 
 	// Test for winner on each row
+	test_winner(1, 2, 3);
+	test_winner(4, 5, 6);
+	test_winner(7, 8, 9);
 
 	// Test for winner on each column
+	test_winner(1, 4, 7);
+	test_winner(2, 5, 8);
+	test_winner(3, 6, 9);
 
 	// Test for winner on each diagonal
+	test_winner(1, 5, 9);
+	test_winner(3, 5, 7);
 
 	// Test for draw
+	b.reset();
+	b.mark_move(1, 'O');
+	b.mark_move(2, 'X');
+	b.mark_move(3, 'X');
+	b.mark_move(4, 'X');
+	b.mark_move(5, 'X');
+	b.mark_move(6, 'O');
+	b.mark_move(7, 'O');
+	b.mark_move(8, 'O');
+	b.mark_move(9, 'X');
+
+	{
+		auto [game_end, winner_found, winner] = b.check_for_winner();
+
+		EXPECT_TRUE(game_end);
+		EXPECT_FALSE(winner_found);
+		EXPECT_EQ('D', winner);
+	}
 }
 
 //  copy constructor?  Do we really need one?

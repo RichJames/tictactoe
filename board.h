@@ -19,7 +19,7 @@ public:
   Board();
   ~Board();
 
-  Board(const Board &) = default;               // default copy constructor
+  Board(const Board &) = delete;                // default copy constructor
   Board(Board &&) noexcept = delete;            // default move constructor
   Board &operator=(const Board &) = delete;     // default copy assignment operator
   Board &operator=(Board &&) noexcept = delete; // default move assignment operator
