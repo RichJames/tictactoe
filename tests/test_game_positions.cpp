@@ -1,7 +1,9 @@
 #include <fstream>
 #include <iostream>
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
-#include "tests.h"
+#include "test_game_positions.h"
 
 const std::string testfilename = "tests.dat";
 
@@ -61,3 +63,12 @@ bool test_board(const std::shared_ptr<Board> &pBoard)
 
   return test_success;
 }
+
+namespace
+{
+TEST(GamePositionTest, Test_Board)
+{
+  std::shared_ptr<Board> b = std::make_shared<Board>();
+  EXPECT_TRUE(test_board(b));
+}
+} // namespace

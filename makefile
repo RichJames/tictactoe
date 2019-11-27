@@ -44,13 +44,16 @@ inputtests.o : tests/input_unittests.cpp
 randomtests.o : tests/randomnumbergenerator_unittests.cpp 
 	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
+gamepositiontest.o : tests/test_game_positions.cpp
+	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
+
 io_redirects.o : tests/io_redirects.cpp
 	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
 playgametests.o : tests/play_game_unittests.cpp 
 	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
-testit : randomtests.o inputtests.o boardtests.o playertests.o playgametests.o player.o board.o randomnumbergenerator.o play_game.o io_redirects.o
+testit : randomtests.o inputtests.o boardtests.o playertests.o playgametests.o player.o board.o randomnumbergenerator.o play_game.o io_redirects.o gamepositiontest.o
 	${COMPILER} ${CXXFLAGS} ${LDFLAGS} $^ -v -o $@ ${GTEST_LIBS} ${GMOCK_LIBS} -lmysqlclient
 	mv $@ tests/
 	tests/$@
