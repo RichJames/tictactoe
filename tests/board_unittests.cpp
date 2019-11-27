@@ -4,23 +4,16 @@
 #include "board.h"
 #include "io_redirects.h"
 
-namespace
+namespace board_unit_tests
 {
-// Capture std::out
-std::stringstream buffer;
-StdCoutTester cout_tester(buffer);
-
-// Capture any messages to std::cerr
-std::stringstream errbuffer;
-StdCerrTester cerr_tester(errbuffer);
-
 TEST(BoardTest, DefaultConstructor_NoDB)
 {
 	std::string errmessage = "Failed to connect to database.  Error: ";
 
-	errbuffer = std::stringstream("");
+	io_redirect::errbuffer = std::stringstream("");
 	Board b;
-	EXPECT_EQ(0, errbuffer.str().find(errmessage));
+	std::string message = io_redirect::errbuffer.str();
+	EXPECT_EQ(0, message.find(errmessage));
 
 	EXPECT_FALSE(b.database_connected());
 	EXPECT_EQ("         ", b.get_board_state());
@@ -33,9 +26,9 @@ TEST(BoardTest, Check_Board_Move_NoDB)
 {
 	std::string errmessage = "Failed to connect to database.  Error: ";
 
-	errbuffer = std::stringstream("");
+	io_redirect::errbuffer = std::stringstream("");
 	Board b;
-	EXPECT_EQ(0, errbuffer.str().find(errmessage));
+	EXPECT_EQ(0, io_redirect::errbuffer.str().find(errmessage));
 
 	EXPECT_FALSE(b.mark_move(0, 'X')); // out of range
 	EXPECT_EQ("         ", b.get_board_state());
@@ -76,9 +69,13 @@ TEST(BoardTest, Reset)
 //  display()
 TEST(BoardTest, Display)
 {
+	auto get_out_message = [&]() -> std::string {
+		std::string message = io_redirect::outbuffer.str();
+		return message;
+	};
 
 	Board b;
-	buffer = std::stringstream("");
+	io_redirect::outbuffer = std::stringstream("");
 	std::string expected = R"~(
    |   |  
 -----------
@@ -88,13 +85,13 @@ TEST(BoardTest, Display)
 
 )~";
 	b.display();
-	EXPECT_EQ(expected, buffer.str());
+	EXPECT_EQ(expected, get_out_message());
 
 	for (int i = 1; i <= 9; ++i)
 	{
 		b.mark_move(i, 'X');
 	}
-	buffer = std::stringstream("");
+	io_redirect::outbuffer = std::stringstream("");
 	expected = R"~(
  X | X | X
 -----------
@@ -104,29 +101,41 @@ TEST(BoardTest, Display)
 
 )~";
 	b.display();
-	EXPECT_EQ(expected, buffer.str());
+	EXPECT_EQ(expected, get_out_message());
 }
 
 //  show_saved_games()
 TEST(BoardTest, Show_Saved_Games_NoDB)
 {
+	auto get_out_message = [&]() -> std::string {
+		std::string message = io_redirect::outbuffer.str();
+		return message;
+	};
+
 	std::string output = "Games read from database:\n";
 
 	Board b;
-	buffer = std::stringstream("");
+	io_redirect::outbuffer = std::stringstream("");
 	b.show_saved_games();
-	EXPECT_EQ(output, buffer.str());
+	EXPECT_EQ(output, get_out_message());
 }
+
 //  save_board()
 TEST(BoardTest, Save_Board_NoDB)
 {
-	errbuffer = std::stringstream("");
+	auto get_out_message = [&]() -> std::string {
+		std::string message = io_redirect::outbuffer.str();
+		return message;
+	};
+
 	Board b;
 
-	errbuffer = std::stringstream("");
+	io_redirect::outbuffer = std::stringstream("");
+	io_redirect::errbuffer = std::stringstream("");
 	b.save_board();
-	EXPECT_EQ("", errbuffer.str());
+	EXPECT_EQ("", get_out_message());
 }
+
 //  check_for_winner()
 TEST(BoardTest, Check_For_Winner)
 {
@@ -184,9 +193,6 @@ TEST(BoardTest, Check_For_Winner)
 		EXPECT_FALSE(winner_found);
 		EXPECT_EQ('D', winner);
 	}
-}
+} // namespace board_unit_tests
 
-//  copy constructor?  Do we really need one?
-//  move constructor?  Do we really need one?
-
-} // namespace
+} // namespace board_unit_tests

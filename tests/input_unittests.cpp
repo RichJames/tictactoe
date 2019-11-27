@@ -8,88 +8,43 @@
 
 namespace
 {
-TEST(InputTests, GetStdIn_Tests)
-{
-  GetStdIn<int> gsi_i;
-  GetStdIn<char> gsi_c;
-  GetStdIn<std::string> gsi_s;
-
-  // Test int input, correct on first attempt
-  std::string buffer = "1\n";
-  StdCinTester cin(buffer);
-  EXPECT_EQ(1, gsi_i.getinput());
-
-  // Test int input, incorrect on first tries, correct on last
-  buffer = "a\n1.2\nword\n2\n";
-  cin.set_buffer(buffer);
-  EXPECT_EQ(2, gsi_i.getinput());
-
-  // Test char input, correct on first attempt
-  buffer = "a\n";
-  cin.set_buffer(buffer);
-  EXPECT_EQ('a', gsi_c.getinput());
-
-  // Test char input, incorrect on first tries, correct on last
-  buffer = "1\n1.2\nword\nb\n";
-  cin.set_buffer(buffer);
-  EXPECT_EQ('b', gsi_c.getinput());
-
-  // Test string input, correct on first attempt
-  buffer = "word\n";
-  cin.set_buffer(buffer);
-  EXPECT_EQ("word", gsi_s.getinput());
-
-  // Test string input, incorrect on first tries, correct on last
-  buffer = "two words\nword\n";
-  cin.set_buffer(buffer);
-  EXPECT_EQ("word", gsi_s.getinput()); // <-- problematic test:  FIX
-
-  // Test clear()
-  buffer = "abc\nx\n";
-  cin.set_buffer(buffer);
-  gsi_c.clear();
-  EXPECT_EQ('x', gsi_c.getinput());
-}
-
 TEST(InputTests, IO_Input_Tests)
 {
+  auto set_buffer = [&](std::string str) {
+    io_redirect::inbuffer = str;
+    io_redirect::cin.set_buffer(io_redirect::inbuffer);
+  };
+
   // Test get_instance()
   auto io = IO::get_instance();
   ASSERT_EQ(io, IO::get_instance());
 
   // Test int input, correct on first attempt
-  std::string buffer = "1\n";
-  StdCinTester cin(buffer);
+  set_buffer("1\n");
   EXPECT_EQ(1, io->get_input<int>());
 
   // Test int input, incorrect on first tries, correct on last
-  buffer = "a\n1.2\nword\n2\n";
-  cin.set_buffer(buffer);
+  set_buffer("a\n1.2\nword\n2\n");
   EXPECT_EQ(2, io->get_input<int>());
 
   // Test char input, correct on first attempt
-  buffer = "a\n";
-  cin.set_buffer(buffer);
+  set_buffer("a\n");
   EXPECT_EQ('a', io->get_input<char>());
 
   // Test char input, incorrect on first tries, correct on last
-  buffer = "1\n1.2\nword\nb\n";
-  cin.set_buffer(buffer);
+  set_buffer("1\n1.2\nword\nb\n");
   EXPECT_EQ('b', io->get_input<char>());
 
   // Test string input, correct on first attempt
-  buffer = "word\n";
-  cin.set_buffer(buffer);
+  set_buffer("word\n");
   EXPECT_EQ("word", io->get_input<std::string>());
 
   // Test string input, incorrect on first tries, correct on last
-  buffer = "two words\nword\n";
-  cin.set_buffer(buffer);
+  set_buffer("two words\nword\n");
   EXPECT_EQ("word", io->get_input<std::string>()); // <-- problematic test:  FIX
 
   // Test clear_input()
-  buffer = "abc\nx\n";
-  cin.set_buffer(buffer);
+  set_buffer("abc\nx\n");
   ASSERT_NO_FATAL_FAILURE(io->clear_input<char>());
   EXPECT_EQ('x', io->get_input<char>());
 }
@@ -100,45 +55,49 @@ TEST(InputTests, IO_Output_Tests)
   auto io = IO::get_instance();
   ASSERT_EQ(io, IO::get_instance());
 
+  auto clear_output_buffer = [&]() {
+    io_redirect::outbuffer = std::stringstream("");
+  };
+
   // Test output()
-  std::stringstream buffer;
-  StdCoutTester cout_tester(buffer);
+  clear_output_buffer();
   io->output(1);
-  int i = std::stoi(buffer.str());
+  std::string output = io_redirect::outbuffer.str();
+  int i = std::stoi(io_redirect::outbuffer.str());
   EXPECT_EQ(1, i);
 
-  buffer = std::stringstream("");
+  clear_output_buffer();
   io->output(-1);
-  i = std::stof(buffer.str());
+  i = std::stof(io_redirect::outbuffer.str());
   EXPECT_EQ(-1, i);
 
-  buffer = std::stringstream("");
+  clear_output_buffer();
   io->output(2.2);
-  float f = std::stof(buffer.str());
+  float f = std::stof(io_redirect::outbuffer.str());
   EXPECT_FLOAT_EQ(2.2, f);
 
-  buffer = std::stringstream("");
+  clear_output_buffer();
   io->output(-3.3);
-  f = std::stof(buffer.str());
+  f = std::stof(io_redirect::outbuffer.str());
   EXPECT_FLOAT_EQ(-3.3, f);
 
-  buffer = std::stringstream("");
+  clear_output_buffer();
   io->output('a');
-  EXPECT_EQ(1, (buffer.str()).size());
-  char c = (buffer.str())[0];
+  EXPECT_EQ(1, (io_redirect::outbuffer.str()).size());
+  char c = (io_redirect::outbuffer.str())[0];
   EXPECT_EQ('a', c);
 
-  buffer = std::stringstream("");
+  clear_output_buffer();
   io->output("word");
-  EXPECT_EQ("word", buffer.str());
+  EXPECT_EQ("word", io_redirect::outbuffer.str());
 
-  buffer = std::stringstream("");
+  clear_output_buffer();
   io->output("word word");
-  EXPECT_EQ("word word", buffer.str());
+  EXPECT_EQ("word word", io_redirect::outbuffer.str());
 
-  buffer = std::stringstream("");
+  clear_output_buffer();
   io->output("word word\nword word");
-  EXPECT_EQ("word word\nword word", buffer.str());
+  EXPECT_EQ("word word\nword word", io_redirect::outbuffer.str());
 }
 
 TEST(InputTests, IO_Err_Output_Tests)
@@ -147,44 +106,47 @@ TEST(InputTests, IO_Err_Output_Tests)
   auto io = IO::get_instance();
   ASSERT_EQ(io, IO::get_instance());
 
+  auto clear_error_buffer = [&]() {
+    io_redirect::errbuffer = std::stringstream("");
+  };
+
   // Test err_output()
-  std::stringstream buffer;
-  StdCerrTester cerr_tester(buffer);
+  clear_error_buffer();
   io->err_output(1);
-  int i = std::stoi(buffer.str());
+  int i = std::stoi(io_redirect::errbuffer.str());
   EXPECT_EQ(1, i);
 
-  buffer = std::stringstream("");
+  clear_error_buffer();
   io->err_output(-1);
-  i = std::stof(buffer.str());
+  i = std::stof(io_redirect::errbuffer.str());
   EXPECT_EQ(-1, i);
 
-  buffer = std::stringstream("");
+  clear_error_buffer();
   io->err_output(2.2);
-  float f = std::stof(buffer.str());
+  float f = std::stof(io_redirect::errbuffer.str());
   EXPECT_FLOAT_EQ(2.2, f);
 
-  buffer = std::stringstream("");
+  clear_error_buffer();
   io->err_output(-3.3);
-  f = std::stof(buffer.str());
+  f = std::stof(io_redirect::errbuffer.str());
   EXPECT_FLOAT_EQ(-3.3, f);
 
-  buffer = std::stringstream("");
+  clear_error_buffer();
   io->err_output('a');
-  EXPECT_EQ(1, (buffer.str()).size());
-  char c = (buffer.str())[0];
+  EXPECT_EQ(1, (io_redirect::errbuffer.str()).size());
+  char c = (io_redirect::errbuffer.str())[0];
   EXPECT_EQ('a', c);
 
-  buffer = std::stringstream("");
+  clear_error_buffer();
   io->err_output("word");
-  EXPECT_EQ("word", buffer.str());
+  EXPECT_EQ("word", io_redirect::errbuffer.str());
 
-  buffer = std::stringstream("");
+  clear_error_buffer();
   io->err_output("word word");
-  EXPECT_EQ("word word", buffer.str());
+  EXPECT_EQ("word word", io_redirect::errbuffer.str());
 
-  buffer = std::stringstream("");
+  clear_error_buffer();
   io->err_output("word word\nword word");
-  EXPECT_EQ("word word\nword word", buffer.str());
+  EXPECT_EQ("word word\nword word", io_redirect::errbuffer.str());
 }
 } // namespace

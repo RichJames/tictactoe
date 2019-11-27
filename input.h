@@ -15,7 +15,6 @@ class InputInterface
 public:
   virtual T getinput() = 0;
   virtual void clear() = 0;
-  // virtual void flush_output() = 0;
   virtual ~InputInterface() = default;
 };
 
@@ -28,15 +27,11 @@ public:
   {
     T n;
 
-    // std::cout << prompt << '\n'
-    //           << std::flush;
     std::cin >> input(n);
 
     while (!std::cin)
     {
       std::cin.clear();
-      // std::cout << prompt << '\n'
-      //           << std::flush;
       std::cin >> input(n);
     }
 
@@ -47,11 +42,6 @@ public:
   {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear remainder of input
   }
-
-  // void flush_output() override
-  // {
-  //   std::cout << std::flush;
-  // }
 
   virtual ~GetStdIn() = default;
 
@@ -116,10 +106,6 @@ public:
     std::string s;
     while (true)
     {
-      // std::cout << prompt << '\n'
-      //           << std::flush;
-      // std::cin >> n;
-
       getline(std::cin, s);
 
       // Get rid of any trailing whitespace
@@ -142,10 +128,6 @@ public:
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear remainder of input
   }
 
-  // void flush_output() override
-  // {
-  //   std::cout << std::flush;
-  // }
   virtual ~GetStdIn() = default;
 };
 
@@ -224,10 +206,4 @@ void IO::clear_input()
   c_in.clear();
 }
 
-// template <typename T>
-// void IO::flush_output()
-// {
-//   GetStdIn<T> c_in;
-//   c_in.flush_output();
-// }
 #endif // __RICH_PROGRAMMING_CPP_TICTACTOE_INPUT_H

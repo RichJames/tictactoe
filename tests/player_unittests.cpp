@@ -43,26 +43,14 @@ TEST(PlayerTest, DefaultConstructorNoDB)
 
 TEST(PlayerTest, HumanPlayerMove)
 {
-	// Capture any messages to std::cerr
-	std::stringstream errbuffer;
-	StdCerrTester cerr_tester(errbuffer);
-
 	const std::shared_ptr<Board> pb = std::make_shared<Board>();
 	const std::string Hname = "Human";
 	HumanPlayer p1{Hname, Player_Order::first_player, pb};
 
-	// Hook into std::cin for automated tests:
-	std::string buffer;
-	StdCinTester cin(buffer);
-
-	// Hook into std::cout to hide output to screen (not testing that here):
-	std::stringstream obuffer;
-	StdCoutTester cout_tester(obuffer);
-
 	auto set_buf = [&](char *str) {
-		buffer = str;
-		cin.set_buffer(buffer);
-		errbuffer = std::stringstream("");
+		io_redirect::inbuffer = str;
+		io_redirect::cin.set_buffer(io_redirect::inbuffer);
+		io_redirect::errbuffer = std::stringstream("");
 	};
 
 	// Test #1: human player making a legal move:
@@ -70,28 +58,28 @@ TEST(PlayerTest, HumanPlayerMove)
 	ASSERT_NO_FATAL_FAILURE(p1.Move());
 	ASSERT_NO_FATAL_FAILURE(std::shared_ptr<Board> pb = p1.getBoard());
 	EXPECT_EQ("X        ", pb->get_board_state());
-	EXPECT_EQ("", errbuffer.str());
+	EXPECT_EQ("", io_redirect::errbuffer.str());
 
 	// Test #2: human player first making an already played move, then a legal one:
 	set_buf("1\n2\n");
 	ASSERT_NO_FATAL_FAILURE(p1.Move());
 	ASSERT_NO_FATAL_FAILURE(std::shared_ptr<Board> pb = p1.getBoard());
 	EXPECT_EQ("XX       ", pb->get_board_state());
-	EXPECT_EQ("", errbuffer.str());
+	EXPECT_EQ("", io_redirect::errbuffer.str());
 
 	// Test #3: human player first making an illegal move (pos 0), then a legal one:
 	set_buf("0\n3\n");
 	ASSERT_NO_FATAL_FAILURE(p1.Move());
 	ASSERT_NO_FATAL_FAILURE(std::shared_ptr<Board> pb = p1.getBoard());
 	EXPECT_EQ("XXX      ", pb->get_board_state());
-	EXPECT_EQ("", errbuffer.str());
+	EXPECT_EQ("", io_redirect::errbuffer.str());
 
 	// Test #4: human player first making an illegal move (pos > 9), then a legal one:
 	set_buf("10\n4\n");
 	ASSERT_NO_FATAL_FAILURE(p1.Move());
 	ASSERT_NO_FATAL_FAILURE(std::shared_ptr<Board> pb = p1.getBoard());
 	EXPECT_EQ("XXXX     ", pb->get_board_state());
-	EXPECT_EQ("", errbuffer.str());
+	EXPECT_EQ("", io_redirect::errbuffer.str());
 }
 
 } // namespace

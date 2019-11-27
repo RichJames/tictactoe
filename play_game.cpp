@@ -34,7 +34,6 @@ bool PlayAgain()
   io->output("Play again? (Y/N)");
 
   char yn = io->get_input<char>();
-  io->clear_input<char>();
 
   return (yn == 'Y' || yn == 'y');
 }

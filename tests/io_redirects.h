@@ -6,6 +6,8 @@
 #include <utility>
 #include <memory>
 
+namespace io_redirect
+{
 class StdCoutTester
 {
 public:
@@ -91,4 +93,15 @@ private:
   std::streambuf *m_sbuf;
 };
 
+// Capture std::out
+extern std::stringstream outbuffer;
+extern StdCoutTester cout_tester; // (outbuffer);
+
+// Capture any messages to std::cerr
+extern std::stringstream errbuffer;
+extern StdCerrTester cerr_tester; // (errbuffer);
+
+extern std::string inbuffer;
+extern StdCinTester cin; // (inbuffer);
+} // namespace io_redirect
 #endif // __RICH_PROGRAMMING_CPP_TICTACTOE_IO_REDIRECTS_H
