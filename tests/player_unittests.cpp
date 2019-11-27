@@ -47,7 +47,7 @@ TEST(PlayerTest, HumanPlayerMove)
 	const std::string Hname = "Human";
 	HumanPlayer p1{Hname, Player_Order::first_player, pb};
 
-	auto set_buf = [&](char *str) {
+	auto set_buf = [&](std::string str) {
 		io_redirect::inbuffer = str;
 		io_redirect::cin.set_buffer(io_redirect::inbuffer);
 		io_redirect::errbuffer = std::stringstream("");

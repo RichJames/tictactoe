@@ -106,20 +106,6 @@ void play_game()
   // Create the board:
   std::shared_ptr<Board> ptrBoard = std::make_shared<Board>();
 
-  // Create an input interface objects:
-  // GetStdIn<int> instream_int;
-  // GetStdIn<char> instream_char;
-
-  // Create unit test for this code
-  // if (test_board(ptrBoard))
-  // {
-  //   std::cout << "**** All tests passed!!! ****\n";
-  // }
-  // else
-  // {
-  //   std::cout << "!!!!!!! At least one test failed !!!!!!!\n";
-  // }
-
   std::ostringstream welcome;
   welcome << "Welcome to Tic Tac Toe!" << std::endl
           << std::endl;
@@ -177,7 +163,4 @@ void play_game()
     bContinuePlaying = PlayAgain();
 
   } while (bContinuePlaying);
-
-  // Just to be safe, ensure all output is flushed and displayed.
-  // io->flush_output<char>();
 }
