@@ -11,8 +11,8 @@ GMOCK_LIBS=`pkg-config --libs gmock`
 testmysql: 
 	${COMPILER} mysql.cpp -I/opt/lampp/include ${LDFLAGS} -lmysqlclient -Wl,--enable-new-dtags,-rpath,/opt/lampp/lib -o testmysql
 
-tictactoe: main.o play_game.o randomnumbergenerator.o board.o player.o tests.o
-	${COMPILER}  ${DEBUG} -o tictactoe main.o play_game.o randomnumbergenerator.o board.o player.o tests.o ${LDFLAGS} -lmysqlclient
+tictactoe: main.o play_game.o randomnumbergenerator.o board.o player.o 
+	${COMPILER}  ${DEBUG} -o tictactoe main.o play_game.o randomnumbergenerator.o board.o player.o  ${LDFLAGS} -lmysqlclient
 
 main.o : main.cpp play_game.h input.h
 	${COMPILER}  -c ${DEBUG} -o main.o main.cpp -I/opt/lampp/include -std=c++17
@@ -28,9 +28,6 @@ board.o : board.cpp board.h
 
 player.o : player.cpp player.h input.h
 	${COMPILER}  -c ${DEBUG} -o player.o player.cpp -I/opt/lampp/include -std=c++17 
-
-tests.o : tests.cpp tests.h
-	${COMPILER}  -c ${DEBUG} -o tests.o tests.cpp -I/opt/lampp/include -std=c++17 
 
 boardtests.o : tests/board_unittests.cpp 
 	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
@@ -76,7 +73,4 @@ playertidy:
 randomnumbertidy:
 	clang-tidy-9 --header-filter='.h' --extra-arg='-std=c++17' randomnumbergenerator.cpp > randomnumbertidy.txt
 
-teststidy:
-	clang-tidy-9 --header-filter='.h' --extra-arg='-std=c++17' tests.cpp > teststidy.txt
-
-tidy: maintidy boardtidy playertidy randomnumbertidy teststidy
+tidy: maintidy boardtidy playertidy randomnumbertidy
