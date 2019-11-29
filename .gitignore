@@ -1,6 +1,5 @@
 a.out
 *.sw?
-*.txt
 *.o
 tictactoe
 testmysql
@@ -14,3 +13,4 @@ testit
 testinput*
 testconcat*
 io.cpp
+build
