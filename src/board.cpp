@@ -129,7 +129,7 @@ bool Board::mark_move(int position, char move)
     const unsigned int pos = position - 1; // User position is 1-based, array position is 0-based.
 
     // is move legal?
-    if (_board[pos] != 'X' && _board[pos] != 'Y')
+    if (_board[pos] != 'X' && _board[pos] != 'O')
     {
       _board[pos] = move;
       return true;
