@@ -14,6 +14,8 @@ TESTOBJS = randomtests.o inputtests.o boardtests.o playertests.o playgametests.o
  
 VPATH = src:tests:../include:./include
 
+makeandtest: tictactoe testit
+
 tictactoe: $(OBJS)
 	${COMPILER}  ${DEBUG} -o $@ $^  ${LDFLAGS} -lmysqlclient
 
