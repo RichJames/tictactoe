@@ -66,6 +66,8 @@ All build artifacts will be in the build directory, include the tictactoe app. Y
 
 Again, this build process requires that mysql.h be findable. Since I use XXAMP, the `include_directories` statement in the CMakeLists.txt file adds `/opt/lampp/include` to the include search directories. CMake is smart enough to find where the libmysqlclient.so file is located, but I expect tht is because that location needs to be on your lib include path in the environment or else explicitly handled inside the CMake file.
 
+I've added in some code for building unit tests. But I need to figure out how to bundle googletest inside the project and also compile and use gmock successfully.
+
 ---
 
 ### Using Bazel (to do)
