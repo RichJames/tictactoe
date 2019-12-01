@@ -134,10 +134,20 @@ void ComputerPlayer::Move()
   }
   else
   {
-    do
+    // Make list of empty positions to choose from:
+    std::vector<int> choices;
+    for (int i = 0; i < board.size(); ++i)
     {
-      // See README for lessons learned here
-      move = RandomNumberGenerator::getRandomNumber(1, number_of_squares);
-    } while (!pBoard->mark_move(move, my_mark));
+      if (board[i] == ' ')
+      {
+        choices.push_back(i + 1); // Player moves are 1-based
+      }
+    }
+    // Choose move from list of available empty positions:
+    move = RandomNumberGenerator::getRandomNumber(0, choices.size() - 1);
+    if (!pBoard->mark_move(choices[move], my_mark))
+    {
+      std::cerr << "Computer player tried to make an illegal move\n";
+    }
   }
 }
