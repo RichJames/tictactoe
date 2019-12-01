@@ -14,11 +14,13 @@ std::vector<std::string> get_test_cases(std::string testfile)
   std::string input;
 
   file.open(testfile.c_str());
-
-  while (std::getline(file, input))
+  if (file.is_open())
   {
-    if (input[0] != '#')
-      testcases.push_back(input);
+    while (std::getline(file, input))
+    {
+      if (input[0] != '#')
+        testcases.push_back(input);
+    }
   }
   return testcases;
 }
@@ -55,6 +57,10 @@ bool test_board(const std::shared_ptr<Board> &pBoard)
   };
 
   auto testcases = get_test_cases(testfilename);
+  if (testcases.empty())
+  {
+    return false;
+  }
 
   bool test_success = true;
   for (auto testcase : testcases)

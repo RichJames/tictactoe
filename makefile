@@ -56,7 +56,9 @@ playgametests.o : play_game_unittests.cpp play_game.h io_redirects.h board.h
 testit : $(TESTOBJS)
 	${COMPILER} ${CXXFLAGS} ${LDFLAGS} $^ -v -o $@ ${GTEST_LIBS} ${GMOCK_LIBS} -lmysqlclient
 	mv $@ tests/
+	cp tests/tests.dat .
 	tests/$@
+	rm tests.dat
 
 clean:
 	- rm testmysql inputtest a.out *.o *tidy.txt *.gz
