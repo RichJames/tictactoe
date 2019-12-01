@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include "gtest/gtest.h"
-#include "gmock/gmock.h"
+//#include "gmock/gmock.h"
 
 #include "test_game_positions.h"
 

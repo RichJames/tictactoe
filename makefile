@@ -1,5 +1,6 @@
 #LDFLAGS="-L/opt/lampp/lib"
 PROJ_DIR=.
+INCLUDES=-I./include
 COMPILER="clang++-9"
 #COMPILER="g++"
 DEBUG=-g
@@ -7,50 +8,52 @@ CFLAGS=-iquote$(PROJ_DIR)
 GTEST_CFLAGS=`pkg-config --cflags gtest_main`
 GTEST_LIBS=`pkg-config --libs gtest_main`
 GMOCK_LIBS=`pkg-config --libs gmock`
+OBJS = main.o play_game.o randomnumbergenerator.o board.o player.o
+TESTOBJS = randomtests.o inputtests.o boardtests.o playertests.o playgametests.o player.o board.o \
+	   randomnumbergenerator.o play_game.o io_redirects.o gamepositiontest.o
+ 
+VPATH = src:tests:../include:./include
 
-testmysql: 
-	${COMPILER} mysql.cpp -I/opt/lampp/include ${LDFLAGS} -lmysqlclient -Wl,--enable-new-dtags,-rpath,/opt/lampp/lib -o testmysql
+tictactoe: $(OBJS)
+	${COMPILER}  ${DEBUG} -o $@ $^  ${LDFLAGS} -lmysqlclient
 
-tictactoe: main.o play_game.o randomnumbergenerator.o board.o player.o 
-	${COMPILER}  ${DEBUG} -o tictactoe main.o play_game.o randomnumbergenerator.o board.o player.o  ${LDFLAGS} -lmysqlclient
-
-main.o : main.cpp play_game.h input.h
-	${COMPILER}  -c ${DEBUG} -o main.o main.cpp -I/opt/lampp/include -std=c++17
+main.o : main.cpp play_game.h
+	${COMPILER}  -c ${DEBUG} -o $@  $< $(INCLUDES) -I/opt/lampp/include -std=c++17
 	
 play_game.o : play_game.cpp play_game.h
-	${COMPILER} -c ${DEBUG} -o play_game.o play_game.cpp -I/opt/lampp/include -std=c++17
+	${COMPILER} -c ${DEBUG} -o $@ $< $(INCLUDES) -I/opt/lampp/include -std=c++17
 
 randomnumbergenerator.o : randomnumbergenerator.cpp RandomNumberGenerator.h
-	${COMPILER}  -c ${DEBUG} -o randomnumbergenerator.o randomnumbergenerator.cpp -std=c++17
+	${COMPILER}  -c ${DEBUG} -o $@ $< $(INCLUDES) -std=c++17
 	
 board.o : board.cpp board.h
-	${COMPILER}  -c ${DEBUG} -o board.o board.cpp -I/opt/lampp/include -std=c++17 
+	${COMPILER}  -c ${DEBUG} -o $@ $< $(INCLUDES) -I/opt/lampp/include -std=c++17 
 
 player.o : player.cpp player.h input.h
-	${COMPILER}  -c ${DEBUG} -o player.o player.cpp -I/opt/lampp/include -std=c++17 
+	${COMPILER}  -c ${DEBUG} -o $@ $< $(INCLUDES) -I/opt/lampp/include -std=c++17 
 
-boardtests.o : tests/board_unittests.cpp 
-	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
+boardtests.o : board_unittests.cpp board.h io_redirects.h
+	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} $(INCLUDES) -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
-playertests.o : tests/player_unittests.cpp 
-	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
+playertests.o : player_unittests.cpp player.h input.h io_redirects.h
+	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} $(INCLUDES) -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
-inputtests.o : tests/input_unittests.cpp 
-	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
+inputtests.o : input_unittests.cpp input.h io_redirects.h
+	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} $(INCLUDES) -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
-randomtests.o : tests/randomnumbergenerator_unittests.cpp 
-	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
+randomtests.o : randomnumbergenerator_unittests.cpp RandomNumberGenerator.h
+	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} $(INCLUDES) -iquote. $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
-gamepositiontest.o : tests/test_game_positions.cpp
-	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
+gamepositiontest.o : test_game_positions.cpp test_game_positions.h
+	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} $(INCLUDES) -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
-io_redirects.o : tests/io_redirects.cpp
-	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
+io_redirects.o : io_redirects.cpp io_redirects.h
+	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} $(INCLUDES) -iquote. $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
-playgametests.o : tests/play_game_unittests.cpp 
-	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
+playgametests.o : play_game_unittests.cpp play_game.h io_redirects.h board.h
+	${COMPILER} ${CPPFLAGS} ${CXXFLAGS} $(INCLUDES) -iquote. -iquote/opt/lampp/include $< -c -o $@ ${GTEST_CFLAGS} -std=c++17
 
-testit : randomtests.o inputtests.o boardtests.o playertests.o playgametests.o player.o board.o randomnumbergenerator.o play_game.o io_redirects.o gamepositiontest.o
+testit : $(TESTOBJS)
 	${COMPILER} ${CXXFLAGS} ${LDFLAGS} $^ -v -o $@ ${GTEST_LIBS} ${GMOCK_LIBS} -lmysqlclient
 	mv $@ tests/
 	tests/$@

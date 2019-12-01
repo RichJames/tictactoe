@@ -1,6 +1,8 @@
 a.out
 *.sw?
 *.o
+*.sav
+new_*
 tictactoe
 testmysql
 inputtest.cpp

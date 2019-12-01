@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "gmock/gmock.h"
+//#include "gmock/gmock.h"
 #include "input.h"
 #include "io_redirects.h"
 

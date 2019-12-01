@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.13.4 FATAL_ERROR)
 project("TicTacToe")
 
 #enable_testing()
-set(cpp_standard "-std=c++17")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR
     "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	set(warnings "-Wall -Wextra -Werror")
@@ -15,24 +17,8 @@ if (NOT_CONFIGURED_ONCE)
     set(CMAKE_C_FLAGS   "${warnings}"
 	CACHE STRING "Flags used by the compiler during all build types." FORCE)
 endif()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${cpp_standard}")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${cpp_standard}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-		    /opt/lampp/include)
-
-#add_subdirectory(ToDoCore)
-
-add_executable(
-	tictactoe
-	main.cpp
-	play_game.cpp
-	randomnumbergenerator.cpp
-	board.cpp
-	player.cpp
-	)
-target_link_libraries(tictactoe mysqlclient)
-
-#add_test(ToDoTest ToDo)
-
-set(CONFIGURED_ONCE TRUE CACHE INTERNAL
-    "A flag showing that CMake has configured at least once.")
+add_subdirectory(src)
+add_subdirectory(tests)
