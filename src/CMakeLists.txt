@@ -1,42 +1,17 @@
-#cmake_minimum_required(VERSION 3.13.4 FATAL_ERROR)
-#project("TicTacToe")
+set(BINARY ${CMAKE_PROJECT_NAME})
 
-#enable_testing()
-#set(cpp_standard "-std=c++17")
-#if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR
-#    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-#	set(warnings "-Wall -Wextra -Werror")
-#elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-#	set(warnings "/W4 /WX /EHsc")
-#endif()
-#if (NOT_CONFIGURED_ONCE)
-#    set(CMAKE_CXX_FLAGS "${warnings}"
-#	CACHE STRING "Flags used by the compiler during all build types." FORCE)
-#    set(CMAKE_C_FLAGS   "${warnings}"
-#	CACHE STRING "Flags used by the compiler during all build types." FORCE)
-#endif()
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${cpp_standard}")
+set(SOURCES play_game.cpp randomnumbergenerator.cpp board.cpp player.cpp)
 
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 include_directories(${TicTacToe_SOURCE_DIR}/include
-		    /opt/lampp/include)
+            /opt/lampp/include
+            )
 
-#add_subdirectory(ToDoCore)
+add_library(game OBJECT "${SOURCES}")
+add_library("${BINARY}_lib" STATIC "${SOURCES}")
+add_executable("${BINARY}" $<TARGET_OBJECTS:game> main.cpp)
 
-add_library(game OBJECT play_game.cpp randomnumbergenerator.cpp board.cpp player.cpp)
-add_executable(tictactoe $<TARGET_OBJECTS:game> main.cpp)
-
-#add_executable(
-#	tictactoe
-#	main.cpp
-#	play_game.cpp
-#	randomnumbergenerator.cpp
-#	board.cpp
-#	player.cpp
-#	)
-target_link_libraries(tictactoe mysqlclient)
-
-#add_test(ToDoTest ToDo)
+target_link_libraries("${BINARY}" mysqlclient)
+target_link_libraries("${BINARY}_lib" mysqlclient)
 
 set(CONFIGURED_ONCE TRUE CACHE INTERNAL
     "A flag showing that CMake has configured at least once.")

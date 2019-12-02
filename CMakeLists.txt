@@ -19,8 +19,17 @@ if (NOT_CONFIGURED_ONCE)
     set(CMAKE_C_FLAGS   "${warnings}"
 	CACHE STRING "Flags used by the compiler during all build types." FORCE)
 endif()
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${cpp_standard}")
+
+include_directories(src)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+include(cmake/GitUtils.cmake)
+git_clone(
+	PROJECT_NAME	googletest
+	GIT_URL		https://github.com/google/googletest.git
+	GIT_BRANCH	master
+	)
 
 add_subdirectory(src)
 add_subdirectory(tests)
+add_subdirectory(build/googletest)

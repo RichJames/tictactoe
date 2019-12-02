@@ -62,17 +62,17 @@ On linux, to build, from the top-level directory where CMakeLists.txt resides:
 ```
 mkdir build
 cd build
-cmake -G "Unix Makefiles" ..
+cmake -G "Unix Makefiles" .. (or cmake ..)
 make
 ```
 
 All build artifacts will be in the build directory, include the tictactoe app. You can delete this directory to completely clean the build output and then repeat the above to build again.
 
-This build process requires that mysql.h be findable. Since I use XXAMP, the `include_directories` statement in the CMakeLists.txt file adds `/opt/lampp/include` to the include search directories. CMake is smart enough to find where the libmysqlclient.so file is located, but I expect tht is because that location needs to be on your lib include path in the environment or else explicitly handled inside the CMake file.
+This build process requires that mysql.h be findable. Since I use XXAMP, the `include_directories` statement in the CMakeLists.txt file adds `/opt/lampp/include` to the include search directories. CMake is smart enough to find where the libmysqlclient.so file is located, but I expect this is because that location needs to be on your lib include path in the environment or else explicitly handled inside the CMake file.
 
-I would like to figure out how to bundle googletest inside the project and also compile and use gmock successfully.
+This build process will also git clone googletest from GitHub into the project build directory and use that as part of the build process for the test suite. Therefore, it is not necessary to have **googletest** already installed before building and testing this application. Thanks to Thilo Schuchort for providing his [cmake_git_clone](https://github.com/tschuchortdev/cmake_git_clone) module as this was a critical piece in making it simple to git clone within CMakeLists.txt.
 
-**Note to self**: review the ExampleProject I have elsewhere and apply what I learn from it to this project.
+I still need to figure out how to compile and use gmock successfully.
 
 Eventually, I would like CMake to also build for a Windows platform. I don't have a Mac, so can't test building there.
 
