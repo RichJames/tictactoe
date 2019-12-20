@@ -209,7 +209,6 @@ MYSQL *Board::_connect_to_db()
       outstream << "Failed to connect to database.  Error: " << mysql_error(conn) << '\n';
       auto io = IO::get_instance();
       io->err_output(outstream.str());
-      // std::cerr << "Failed to connect to database.  Error: " << mysql_error(conn) << '\n';
       conn = NULL;
     }
   }
@@ -235,7 +234,6 @@ bool Board::_isgamesaved(const std::string &search_pattern)
     outstream << "Game search failed.  Error: " << res << '\n';
     auto io = IO::get_instance();
     io->err_output(outstream.str());
-    // std::cerr << "Game search failed.  Error: " << res << '\n';
   }
   MYSQL_RES *result = mysql_store_result(_conn);
   return (mysql_num_rows(result) != 0);
@@ -258,7 +256,6 @@ void Board::_getsavedgames()
     outstream << "Query for saved games failed.  Error: " << res << '\n';
     auto io = IO::get_instance();
     io->err_output(outstream.str());
-    // std::cerr << "Query for saved games failed.  Error: " << res << '\n';
     return;
   }
 
@@ -276,19 +273,14 @@ void Board::_getsavedgames()
     outstream << "Unexpectedly got more than 1 field from the database\n";
     auto io = IO::get_instance();
     io->err_output(outstream.str());
-    // std::cerr << "Unexpectedly got more than 1 field from the database\n";
     return;
   }
 
   // MYSQL_ROW row;
   while (MYSQL_ROW row = mysql_fetch_row(result))
   {
-    // std::string game = row[0];
     _saved_games.emplace(row[0]);
   }
 
   mysql_free_result(result); // clear result set from memory
-
-  // Display games read from database:
-  // show_saved_games();
 }

@@ -44,16 +44,6 @@ private:
   std::set<std::string> _saved_games;
   MYSQL *_conn = NULL;
 
-  // const unsigned int top_lft = 0; // top leftgg
-  // const unsigned int top_mid = 1; // top middle
-  // const unsigned int top_rgt = 2; // top right
-  // const unsigned int mid_lft = 3; // middle left
-  // const unsigned int ctr = 4;     // center
-  // const unsigned int mid_rgt = 5; // middle right
-  // const unsigned int bot_lft = 6; // bottom left
-  // const unsigned int bot_mid = 7; // bottom middle
-  // const unsigned int bot_rgt = 8; // bottom right
-
   enum Position : unsigned long
   {
     top_lft, // top leftgg
